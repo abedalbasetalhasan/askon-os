@@ -1,0 +1,6 @@
+# Local browser configuration — contains the public project endpoint and key.
+config.js
+
+# Local editor files
+.DS_Store
+Thumbs.db
