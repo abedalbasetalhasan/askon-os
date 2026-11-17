@@ -459,8 +459,7 @@ async function doLogin(e){
     email:document.getElementById('loginEmail').value.trim(),
     password:document.getElementById('loginPassword').value
   });
-  if(error){ showLogin('بيانات الدخول غير صحيحة'); return; }
-  await startSession(data.user);
+if(error){ showLogin('خطأ: ' + error.message); return; }  await startSession(data.user);
 }
 async function doLogout(){
   if(realtimeChannel){ try{ await sb.removeChannel(realtimeChannel); }catch(e){} realtimeChannel = null; }
