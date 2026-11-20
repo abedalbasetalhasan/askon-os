@@ -2,891 +2,209 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AskON Operations & Tasks Dashboard | نظام إدارة مهام وعمليات آسك أون</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>AskON OS | نظام إدارة المهام والعمليات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<style>
-:root{color-scheme:light;--askon-purple:#2F153F;--askon-purple-hover:#3E1D52;--askon-purple-subtle:#F5EFF9;--askon-fuchsia:#B0126A;--askon-fuchsia-subtle:#FDF0F7;--askon-gold:#C5A059;--askon-gold-hover:#B28E46;--askon-gold-subtle:#FBF7EE;--background:#F8F9FA;--surface-container-low:#FFFFFF;--surface-container:#F1F3F6;--surface-container-high:#E5E8EE;--on-surface:#1E1926;--on-surface-variant:#615B6C;--on-surface-subtle:#8E8899;--outline:#E2DFEB;--outline-variant:#ECE9F2;--hairline:1px solid var(--outline-variant);--hairline-control:1px solid var(--outline);--positive:#0F764F;--positive-container:#ECFDF5;--warning:#B45309;--warning-container:#FFFBEB;--error:#BE123C;--error-container:#FFF1F2;--focus:var(--askon-purple);--font-headline:'IBM Plex Sans Arabic','Outfit',sans-serif;--font-body:'IBM Plex Sans Arabic',sans-serif;--font-label:'Outfit','IBM Plex Sans Arabic',sans-serif;--space-xs:.25rem;--space-sm:.5rem;--space-md:1rem;--space-lg:1.5rem;--space-2xl:3.5rem;--rounded-sm:.375rem;--rounded-md:.5rem;--rounded-lg:.75rem;--rounded-xl:1rem;--rounded-full:9999px;--shadow-sm:0 1px 3px rgba(30,25,38,.04),0 1px 2px rgba(30,25,38,.03);--shadow-md:0 4px 14px rgba(30,25,38,.06),0 1px 3px rgba(30,25,38,.04);--shadow-modal:0 16px 36px rgba(30,25,38,.12),0 4px 10px rgba(30,25,38,.06)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--background);color:var(--on-surface);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-body.role-member .admin-only{display:none!important}
-body.auth-pending .app-wrapper{display:none}
-button,input,select,textarea{font-family:inherit;color:inherit;font-size:inherit}
-button{cursor:pointer;border:none;background:none;display:inline-flex;align-items:center;justify-content:center;gap:var(--space-sm);transition:all .2s}
-button:active{transform:scale(.98)}button:disabled{opacity:.6;cursor:wait}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.app-wrapper{max-width:1440px;margin:0 auto;padding:var(--space-md) var(--space-lg) var(--space-2xl);min-height:100vh;display:flex;flex-direction:column;gap:var(--space-lg)}
-.app-header{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);padding:var(--space-md) var(--space-lg);box-shadow:var(--shadow-sm);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-md)}
-.brand-section{display:flex;align-items:center;gap:var(--space-md);flex-wrap:wrap}
-.brand-logo-mark{width:44px;height:44px;border-radius:var(--rounded-md);background:linear-gradient(135deg,var(--askon-purple),#1a0b23);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.15rem;border:1px solid rgba(197,160,89,.4);position:relative;flex-shrink:0}
-.brand-logo-mark::after{content:'';position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--askon-fuchsia);border:2px solid var(--surface-container-low)}
-.brand-text-block{display:flex;flex-direction:column}
-.brand-title-row{display:flex;align-items:center;gap:var(--space-sm)}
-.brand-name{font-family:var(--font-headline);font-size:1.25rem;font-weight:700;color:var(--askon-purple)}
-.brand-badge{font-size:.675rem;font-weight:600;padding:.15rem .5rem;border-radius:var(--rounded-full);background:var(--askon-gold-subtle);color:var(--askon-gold-hover)}
-.brand-tagline{font-size:.8rem;color:var(--on-surface-variant);margin-top:2px}
-.header-actions{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-sm)}
-.user-chip{display:flex;align-items:center;gap:6px;background:var(--askon-purple-subtle);padding:4px 10px;border-radius:var(--rounded-md);border:1px solid rgba(47,21,63,.1);font-size:.8rem;font-weight:700;color:var(--askon-purple)}
-.btn{padding:.55rem 1.05rem;border-radius:var(--rounded-md);font-size:.875rem;font-weight:500;min-height:38px}
-.btn-primary{background:var(--askon-purple);color:#fff}.btn-primary:hover{background:var(--askon-purple-hover)}
-.btn-secondary{background:var(--askon-fuchsia-subtle);color:var(--askon-fuchsia);border:1px solid rgba(176,18,106,.2)}
-.btn-outline{background:var(--surface-container-low);color:var(--on-surface);border:var(--hairline-control)}.btn-outline:hover{background:var(--surface-container)}
-.icon-btn{width:38px;height:38px;padding:0;border-radius:var(--rounded-md);border:var(--hairline-control);background:var(--surface-container-low);color:var(--on-surface-variant);position:relative}
-.icon-btn:hover{background:var(--surface-container);color:var(--on-surface)}
-.notification-badge{position:absolute;top:-3px;left:-3px;background:var(--askon-fuchsia);color:#fff;font-size:.65rem;font-weight:700;min-width:17px;height:17px;border-radius:var(--rounded-full);display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid var(--surface-container-low)}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-md)}
-.kpi-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);padding:var(--space-md);display:flex;align-items:center;gap:var(--space-md);box-shadow:var(--shadow-sm)}
-.kpi-icon-wrap{width:42px;height:42px;border-radius:var(--rounded-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.kpi-purple{background:var(--askon-purple-subtle);color:var(--askon-purple)}.kpi-fuchsia{background:var(--askon-fuchsia-subtle);color:var(--askon-fuchsia)}.kpi-gold{background:var(--askon-gold-subtle);color:var(--askon-gold)}.kpi-green{background:var(--positive-container);color:var(--positive)}.kpi-red{background:var(--error-container);color:var(--error)}
-.kpi-info{display:flex;flex-direction:column}
-.kpi-label{font-size:.775rem;color:var(--on-surface-variant);font-weight:500}
-.kpi-value{font-family:var(--font-label);font-size:1.55rem;font-weight:700;line-height:1.1}
-.nav-tabs-wrapper{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);padding:var(--space-xs);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-sm)}
-.nav-tabs-list{display:flex;align-items:center;gap:var(--space-xs);overflow-x:auto;padding:2px;scrollbar-width:none}
-.tab-btn{padding:.5rem 1rem;border-radius:var(--rounded-md);font-size:.875rem;font-weight:500;color:var(--on-surface-variant);white-space:nowrap}
-.tab-btn:hover{color:var(--askon-purple);background:var(--surface-container)}
-.tab-btn.active{background:var(--askon-purple-subtle);color:var(--askon-purple);font-weight:600}
-.tab-badge{padding:.1rem .4rem;border-radius:var(--rounded-full);font-size:.7rem;background:rgba(47,21,63,.1);margin-inline-start:var(--space-xs)}
-.tab-btn.active .tab-badge{background:var(--askon-purple);color:#fff}
-.filter-bar{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-sm);padding:var(--space-sm) var(--space-md);background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);box-shadow:var(--shadow-sm)}
-.search-input-wrap{flex:1;min-width:220px;position:relative;display:flex;align-items:center}
-.search-icon{position:absolute;right:.75rem;color:var(--on-surface-subtle)}
-.search-input,.filter-select{height:38px;padding:0 2.25rem 0 var(--space-md);background:var(--surface-container);border:1px solid transparent;border-radius:var(--rounded-md);font-size:.85rem;width:100%}
-.filter-select{padding:0 var(--space-md);width:auto;cursor:pointer}
-.search-input:focus,.filter-select:focus{background:#fff;border-color:var(--outline)}
-.view-content{display:none}.view-content.active{display:block}
-.kanban-grid{display:grid;grid-template-columns:repeat(4,minmax(280px,1fr));gap:var(--space-md);align-items:start;overflow-x:auto;padding-bottom:var(--space-md)}
-.kanban-column{background:var(--surface-container);border:2px solid transparent;border-radius:var(--rounded-lg);padding:var(--space-sm);display:flex;flex-direction:column;gap:var(--space-sm);min-height:480px}
-.kanban-column.drag-over{border:2px dashed var(--askon-purple);background:var(--askon-purple-subtle)}
-.kanban-col-header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-sm) var(--space-xs);border-bottom:var(--hairline)}
-.kanban-col-title-wrap{display:flex;align-items:center;gap:var(--space-sm)}
-.kanban-col-indicator{width:8px;height:8px;border-radius:50%}
-.indicator-backlog{background:var(--on-surface-subtle)}.indicator-progress{background:var(--askon-fuchsia)}.indicator-review{background:var(--askon-gold)}.indicator-completed{background:var(--positive)}
-.kanban-col-title{font-size:.875rem;font-weight:600}
-.kanban-col-count{font-size:.725rem;font-weight:600;color:var(--on-surface-variant);background:var(--surface-container-high);padding:.1rem .5rem;border-radius:var(--rounded-full)}
-.kanban-card-list{display:flex;flex-direction:column;gap:var(--space-sm);min-height:120px}
-.task-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-md);padding:var(--space-md);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:var(--space-sm);cursor:grab}
-.task-card:hover{border-color:var(--outline);box-shadow:var(--shadow-md)}
-.task-card.dragging{opacity:.5;cursor:grabbing}
-.task-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-sm)}
-.task-unit-tag{font-size:.675rem;font-weight:600;padding:.15rem .5rem;border-radius:var(--rounded-sm);display:inline-flex;align-items:center;gap:3px}
-.unit-strategy{background:var(--askon-purple-subtle);color:var(--askon-purple);border:1px solid rgba(47,21,63,.15)}
-.unit-creative{background:var(--askon-fuchsia-subtle);color:var(--askon-fuchsia);border:1px solid rgba(176,18,106,.15)}
-.unit-operations{background:#eff6ff;color:#1d4ed8;border:1px solid rgba(29,78,216,.15)}
-.unit-events{background:var(--askon-gold-subtle);color:var(--askon-gold-hover);border:1px solid rgba(197,160,89,.25)}
-.unit-language{background:#f0fdf4;color:#15803d;border:1px solid rgba(21,128,61,.15)}
-.priority-badge{font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:var(--rounded-sm)}
-.priority-urgent{background:var(--error-container);color:var(--error);border:1px solid rgba(190,18,60,.2)}
-.priority-high{background:var(--warning-container);color:var(--warning);border:1px solid rgba(180,83,9,.2)}
-.priority-medium{background:var(--surface-container);color:var(--on-surface-variant)}
-.priority-low{background:var(--surface-container);color:var(--on-surface-subtle)}
-.task-title{font-size:.9rem;font-weight:600;line-height:1.35}
-.task-desc-preview{font-size:.75rem;color:var(--on-surface-variant);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.task-project-label{font-size:.75rem;color:var(--on-surface-variant);display:flex;align-items:center;gap:4px}
-.task-meta-row{display:flex;align-items:center;justify-content:space-between;padding-top:var(--space-xs);border-top:var(--hairline);font-size:.75rem;color:var(--on-surface-subtle)}
-.task-assignee{display:flex;align-items:center;gap:6px;font-weight:500;color:var(--on-surface-variant)}
-.assignee-avatar-sm{width:22px;height:22px;border-radius:50%;background:var(--askon-purple-subtle);color:var(--askon-purple);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
-.task-due-date.is-urgent{color:var(--error);font-weight:600}
-.task-actions-row{display:flex;align-items:center;justify-content:flex-end;gap:4px}
-.task-action-btn{padding:3px 6px;border-radius:var(--rounded-sm);font-size:.7rem;color:var(--on-surface-variant);background:var(--surface-container)}
-.task-action-btn:hover{background:var(--surface-container-high);color:var(--on-surface)}
-.sop-checklist{display:flex;flex-direction:column;gap:4px;background:var(--surface-container-high);padding:8px;border-radius:var(--rounded-sm)}
-.sop-item{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--on-surface-variant);cursor:pointer}
-.sop-item input{accent-color:var(--askon-purple);cursor:pointer}
-.sop-item.locked{opacity:.55;cursor:not-allowed}.sop-item.locked input{cursor:not-allowed}
-.table-container{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);overflow-x:auto}
-.data-table{width:100%;border-collapse:collapse;text-align:right;font-size:.85rem}
-.data-table th{padding:var(--space-sm) var(--space-md);background:var(--surface-container);border-bottom:var(--hairline);white-space:nowrap}
-.data-table td{padding:var(--space-md);border-bottom:var(--hairline);vertical-align:middle}
-.calendar-layout{display:grid;grid-template-columns:2fr 1fr;gap:var(--space-md)}
-@media(max-width:900px){.calendar-layout{grid-template-columns:1fr}}
-.calendar-main-card,.milestone-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);padding:var(--space-md);display:flex;flex-direction:column;gap:var(--space-md)}
-.calendar-header{display:flex;align-items:center;justify-content:space-between}
-.calendar-month-title{font-size:1.15rem;font-weight:700;color:var(--askon-purple);display:flex;gap:var(--space-sm)}
-.calendar-nav-buttons{display:flex;gap:var(--space-xs)}
-.calendar-grid-header{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.75rem;font-weight:600;color:var(--on-surface-subtle);padding-bottom:var(--space-xs);border-bottom:var(--hairline)}
-.calendar-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.calendar-day-cell{min-height:72px;border:1px solid var(--outline-variant);border-radius:var(--rounded-sm);padding:4px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;overflow:hidden}
-.calendar-day-cell:hover{background:var(--surface-container)}
-.calendar-day-cell.other-month{background:#fafafa;opacity:.45;cursor:default}
-.calendar-day-cell.selected{border-color:var(--askon-purple);background:var(--askon-purple-subtle)}
-.calendar-day-cell.today .day-number{background:var(--askon-purple);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center}
-.day-number{font-size:.775rem;font-weight:600}
-.day-events-dots{display:flex;flex-direction:column;gap:1px;margin-top:2px}
-.event-chip{font-size:.625rem;padding:1px 3px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block}
-.chip-purple{background:var(--askon-purple-subtle);color:var(--askon-purple)}.chip-fuchsia{background:var(--askon-fuchsia-subtle);color:var(--askon-fuchsia)}.chip-gold{background:var(--askon-gold-subtle);color:var(--askon-gold-hover)}
-.calendar-sidebar{display:flex;flex-direction:column;gap:var(--space-md)}
-.milestone-item{display:flex;gap:var(--space-sm);padding:var(--space-sm) 0;border-bottom:1px dashed var(--outline-variant)}
-.notes-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-sm);margin-bottom:var(--space-md)}
-.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-md)}
-.note-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);padding:var(--space-md);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:var(--space-sm);min-height:180px}
-.note-card:hover{box-shadow:var(--shadow-md)}
-.note-card.note-purple{border-top:4px solid var(--askon-purple)}.note-card.note-fuchsia{border-top:4px solid var(--askon-fuchsia)}.note-card.note-gold{border-top:4px solid var(--askon-gold)}
-.note-header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-xs)}
-.note-title{font-size:.95rem;font-weight:600}
-.note-body{font-size:.825rem;color:var(--on-surface-variant);white-space:pre-line;line-height:1.5;flex:1}
-.team-panel-grid{display:grid;grid-template-columns:1fr 2fr;gap:var(--space-lg)}
-@media(max-width:960px){.team-panel-grid{grid-template-columns:1fr}}
-.business-units-list{display:flex;flex-direction:column;gap:var(--space-sm)}
-.bu-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-md);padding:var(--space-md);display:flex;align-items:center;justify-content:space-between}
-.bu-info{display:flex;align-items:center;gap:var(--space-sm)}
-.bu-icon-box{width:34px;height:34px;border-radius:var(--rounded-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.bu-icon-box svg{width:18px;height:18px}
-.bu-title{font-size:.875rem;font-weight:600}
-.bu-badge{font-size:.75rem;background:var(--surface-container);padding:2px 8px;border-radius:99px}
-.member-card{background:var(--surface-container);border:var(--hairline);border-radius:var(--rounded-md);padding:var(--space-md);display:flex;flex-direction:column;gap:var(--space-sm)}
-.workload-bar-container{width:100%;height:6px;background:var(--outline-variant);border-radius:var(--rounded-full);overflow:hidden;margin-top:4px}
-.workload-progress{height:100%;border-radius:var(--rounded-full);transition:width .3s ease}
-.modal-overlay{position:fixed;inset:0;background:rgba(30,25,38,.45);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:var(--space-md);opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-overlay.open{opacity:1;pointer-events:auto}
-.modal-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-xl);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-modal);transform:translateY(12px) scale(.98);transition:transform .3s;display:flex;flex-direction:column}
-.modal-overlay.open .modal-card{transform:none}
-.modal-header{padding:var(--space-md) var(--space-lg);border-bottom:var(--hairline);display:flex;align-items:center;justify-content:space-between}
-.modal-title{display:flex;align-items:center;gap:var(--space-sm);font-weight:700;color:var(--askon-purple)}
-.modal-body{padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-md)}
-.modal-footer{padding:var(--space-md) var(--space-lg);border-top:var(--hairline);display:flex;justify-content:flex-end;gap:var(--space-sm);background:var(--surface-container)}
-.form-group{display:flex;flex-direction:column;gap:var(--space-xs)}
-.form-label,.form-group>label{font-size:.8rem;font-weight:600}
-.form-control{width:100%;height:40px;padding:0 var(--space-md);border:var(--hairline-control);border-radius:var(--rounded-md);background:var(--surface-container-low);font-size:.85rem}
-textarea.form-control{height:auto;min-height:80px;padding:var(--space-sm) var(--space-md);resize:vertical}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
-.dropdown-container{position:relative}
-.notifications-dropdown{position:absolute;top:100%;left:0;margin-top:var(--space-xs);width:340px;max-width:90vw;background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-lg);box-shadow:var(--shadow-modal);padding:var(--space-sm);z-index:500;display:none;flex-direction:column;gap:var(--space-xs)}
-.notifications-dropdown.show{display:flex}
-.toast-container{position:fixed;bottom:var(--space-lg);left:50%;transform:translateX(-50%);z-index:4000;display:flex;flex-direction:column;gap:var(--space-xs);pointer-events:none}
-.toast-message{background:var(--on-surface);color:#fff;padding:.65rem 1.25rem;border-radius:var(--rounded-full);box-shadow:var(--shadow-modal);font-size:.85rem;transition:opacity .3s}
-.app-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-sm);padding-top:var(--space-md);border-top:var(--hairline);font-size:.75rem;color:var(--on-surface-subtle)}
-.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--positive)}
-.shortcut-hint{font-size:.7rem;color:var(--on-surface-subtle);background:var(--surface-container);padding:2px 6px;border-radius:4px;margin-inline-start:8px}
-.login-overlay{position:fixed;inset:0;z-index:3000;background:var(--background);display:none;align-items:center;justify-content:center;padding:var(--space-md)}
-.login-overlay.show{display:flex}
-.login-card{background:var(--surface-container-low);border:var(--hairline);border-radius:var(--rounded-xl);box-shadow:var(--shadow-modal);width:100%;max-width:400px;padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-md)}
-.login-error{color:var(--error);font-size:.8rem;min-height:1.2em}
-</style>
+<script src="config.js"></script>
+<script src="app.js" defer></script>
 </head>
-<body class="auth-pending">
+<body class="auth-pending role-member">
+<noscript><p style="padding:2rem;text-align:center">يتطلب هذا النظام تفعيل JavaScript.</p></noscript>
 
-<!-- LOGIN -->
+<!-- ============ LOGIN ============ -->
 <div class="login-overlay show" id="loginOverlay">
-  <form class="login-card" id="loginForm" onsubmit="doLogin(event)">
-    <div style="display:flex;align-items:center;gap:12px"><div class="brand-logo-mark">A</div><div><div class="brand-name">AskON Creative Agency</div><div style="font-size:.8rem;color:var(--on-surface-variant)">تسجيل الدخول إلى نظام العمليات</div></div></div>
-    <div class="form-group"><label for="loginEmail">البريد الإلكتروني</label><input type="email" id="loginEmail" class="form-control" autocomplete="username" required></div>
-    <div class="form-group"><label for="loginPassword">كلمة المرور</label><input type="password" id="loginPassword" class="form-control" autocomplete="current-password" required></div>
-    <div class="login-error" id="loginError" role="alert"></div>
-    <button type="submit" class="btn btn-primary" id="loginBtn">دخول</button>
+  <form class="login-card" id="loginForm" novalidate>
+    <div class="login-brand"><div class="logo-mark">A</div><div><div class="brand-name">AskON OS</div><div class="muted">تسجيل الدخول إلى نظام العمليات</div></div></div>
+    <label class="field"><span>البريد الإلكتروني</span><input type="email" id="loginEmail" class="input" autocomplete="username" maxlength="254" dir="ltr" required></label>
+    <label class="field"><span>كلمة المرور</span>
+      <span class="pw-wrap"><input type="password" id="loginPassword" class="input" autocomplete="current-password" maxlength="128" dir="ltr" required>
+      <button type="button" class="pw-toggle" data-action="togglePw" aria-label="إظهار كلمة المرور"><i data-lucide="eye"></i></button></span>
+    </label>
+    <div class="login-error" id="loginError" role="alert" aria-live="polite"></div>
+    <button type="submit" class="btn btn-primary btn-block" id="loginBtn">دخول</button>
   </form>
 </div>
 
-<div class="app-wrapper">
-  <header class="app-header">
-    <div class="brand-section">
-      <div class="brand-logo-mark">A</div>
-      <div class="brand-text-block">
-        <div class="brand-title-row"><h1 class="brand-name">AskON Creative Agency</h1><span class="brand-badge">نظام العمليات المعتمد</span></div>
-        <p class="brand-tagline">نظام إدارة العمليات والمهام المؤسسية • <span>KEEP ON ASKING | ASK BETTER</span></p>
+<!-- ============ APP ============ -->
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="القائمة الرئيسية">
+    <div class="sb-brand"><div class="logo-mark">A</div><div class="sb-brand-text"><strong>AskON OS</strong><span>KEEP ON ASKING</span></div>
+      <button class="icon-btn only-mobile" data-action="closeSidebar" aria-label="إغلاق القائمة"><i data-lucide="x"></i></button></div>
+    <nav class="sb-nav" aria-label="العروض">
+      <button class="nav-item active" data-action="view" data-view="board"><i data-lucide="layout-dashboard"></i><span>لوحة كانبان</span><em id="badgeKanban">0</em></button>
+      <button class="nav-item" data-action="view" data-view="table"><i data-lucide="list-checks"></i><span>جدول المهام</span></button>
+      <button class="nav-item" data-action="view" data-view="calendar"><i data-lucide="calendar-days"></i><span>التقويم والتسليمات</span></button>
+      <button class="nav-item" data-action="view" data-view="notes"><i data-lucide="sticky-note"></i><span>ملاحظات وأفكار</span><em id="badgeNotes">0</em></button>
+      <button class="nav-item" data-action="view" data-view="team"><i data-lucide="users"></i><span>الفريق والوحدات</span></button>
+    </nav>
+    <div class="sb-label">وحدات العمل</div>
+    <div class="sb-units" id="sbUnits"></div>
+    <div class="sb-foot">
+      <div class="me"><span class="av" id="meAvatar">?</span><div class="me-text"><strong id="meName">—</strong><span id="meRole">—</span></div></div>
+      <div class="sb-foot-actions">
+        <button class="icon-btn" data-action="toggleTheme" aria-label="تبديل المظهر" title="تبديل المظهر"><i data-lucide="moon" class="ic-moon"></i><i data-lucide="sun" class="ic-sun"></i></button>
+        <button class="icon-btn admin-only" data-action="exportData" aria-label="تصدير نسخة احتياطية" title="تصدير نسخة احتياطية"><i data-lucide="download"></i></button>
+        <button class="icon-btn" data-action="logout" aria-label="تسجيل الخروج" title="تسجيل الخروج"><i data-lucide="log-out"></i></button>
       </div>
-      <div class="user-chip"><i data-lucide="user-circle" style="width:16px"></i><span id="currentUserLabel"></span></div>
     </div>
-    <div class="header-actions">
-      <button type="button" class="btn btn-outline" onclick="filterMyTasks()"><i data-lucide="filter" style="width:17px;height:17px"></i><span>مهامي فقط</span></button>
-      <button type="button" class="btn btn-primary" onclick="openTaskModal()" title="اختصار: زر N"><i data-lucide="plus-circle" style="width:17px;height:17px"></i><span>مهمة جديدة</span><span class="shortcut-hint" style="color:#fff;background:rgba(255,255,255,.2)">N</span></button>
-      <button type="button" class="btn btn-secondary" onclick="switchTab('team')"><i data-lucide="users" style="width:17px;height:17px"></i><span>فريق العمل</span></button>
-      <div class="dropdown-container" id="notifWrap">
-        <button type="button" class="icon-btn" onclick="toggleNotificationsDropdown()" id="notifBtn" aria-label="التنبيهات"><i data-lucide="bell" style="width:18px;height:18px"></i><span class="notification-badge" id="notifBadge">0</span></button>
-        <div class="notifications-dropdown" id="notifDropdown">
-          <div style="padding:4px 8px;font-weight:700;color:var(--askon-purple);border-bottom:1px solid #ddd">التنبيهات العاجلة</div>
-          <div id="notifItemsContainer" style="max-height:240px;overflow-y:auto"></div>
+  </aside>
+  <div class="scrim" id="scrim" data-action="closeSidebar"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" data-action="openSidebar" aria-label="فتح القائمة"><i data-lucide="menu"></i></button>
+      <h1 id="viewTitle">لوحة كانبان</h1>
+      <label class="search"><i data-lucide="search"></i><input type="search" id="taskSearchInput" data-input="search" placeholder="بحث في المهام…  ( / )" maxlength="100" aria-label="بحث"></label>
+      <div class="top-actions">
+        <div class="dropdown" id="notifWrap">
+          <button class="icon-btn" data-action="toggleNotif" id="notifBtn" aria-label="التنبيهات" aria-haspopup="true"><i data-lucide="bell"></i><span class="dot-badge" id="notifBadge">0</span></button>
+          <div class="dropdown-menu" id="notifDropdown"><div class="dd-title">التنبيهات العاجلة</div><div id="notifList"></div></div>
         </div>
+        <button class="btn btn-primary" data-action="newTask"><i data-lucide="plus"></i><span class="hide-sm">مهمة جديدة</span><kbd class="hide-sm">N</kbd></button>
       </div>
-      <button type="button" class="icon-btn admin-only" onclick="exportDataBackup()" title="تصدير نسخة احتياطية" aria-label="تصدير نسخة احتياطية"><i data-lucide="download" style="width:17px;height:17px"></i></button>
-      <button type="button" class="icon-btn" onclick="doLogout()" title="تسجيل الخروج" aria-label="تسجيل الخروج"><i data-lucide="log-out" style="width:17px;height:17px"></i></button>
-    </div>
-  </header>
+    </header>
 
-  <section class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-icon-wrap kpi-purple"><i data-lucide="layers" style="width:20px;height:20px"></i></div><div class="kpi-info"><span class="kpi-label">إجمالي المهام</span><span class="kpi-value" id="kpiTotalTasks">0</span></div></div>
-    <div class="kpi-card"><div class="kpi-icon-wrap kpi-fuchsia"><i data-lucide="clock" style="width:20px;height:20px"></i></div><div class="kpi-info"><span class="kpi-label">قيد التنفيذ والمتابعة</span><span class="kpi-value" id="kpiInProgressTasks">0</span></div></div>
-    <div class="kpi-card"><div class="kpi-icon-wrap kpi-gold"><i data-lucide="check-check" style="width:20px;height:20px"></i></div><div class="kpi-info"><span class="kpi-label">مراجعة الجودة (SOP-007)</span><span class="kpi-value" id="kpiReviewTasks">0</span></div></div>
-    <div class="kpi-card"><div class="kpi-icon-wrap kpi-red"><i data-lucide="alert-triangle" style="width:20px;height:20px"></i></div><div class="kpi-info"><span class="kpi-label">مهام عاجلة / متأخرة</span><span class="kpi-value" id="kpiUrgentTasks" style="color:var(--error)">0</span></div></div>
-    <div class="kpi-card"><div class="kpi-icon-wrap kpi-green"><i data-lucide="users" style="width:20px;height:20px"></i></div><div class="kpi-info"><span class="kpi-label">فريق العمل النشط</span><span class="kpi-value" id="kpiTeamCount">0</span></div></div>
-  </section>
+    <div class="content">
+      <section class="kpis" id="kpis" aria-label="مؤشرات">
+        <div class="kpi fx"><div class="kpi-ic k-purple"><i data-lucide="layers"></i></div><div><span>إجمالي المهام</span><b id="kpiTotalTasks">0</b></div></div>
+        <div class="kpi fx"><div class="kpi-ic k-fuchsia"><i data-lucide="clock"></i></div><div><span>قيد التنفيذ</span><b id="kpiInProgressTasks">0</b></div></div>
+        <div class="kpi fx"><div class="kpi-ic k-gold"><i data-lucide="check-check"></i></div><div><span>مراجعة الجودة</span><b id="kpiReviewTasks">0</b></div></div>
+        <div class="kpi fx"><div class="kpi-ic k-red"><i data-lucide="alert-triangle"></i></div><div><span>عاجلة / متأخرة</span><b id="kpiUrgentTasks" class="c-err">0</b></div></div>
+        <div class="kpi fx"><div class="kpi-ic k-green"><i data-lucide="users"></i></div><div><span>أعضاء الفريق</span><b id="kpiTeamCount">0</b></div></div>
+      </section>
 
-  <div class="nav-tabs-wrapper">
-    <div class="nav-tabs-list">
-      <button type="button" class="tab-btn active" id="tab-kanban" onclick="switchTab('kanban')">لوحة كانبان <span class="tab-badge" id="badgeKanban">0</span></button>
-      <button type="button" class="tab-btn" id="tab-table" onclick="switchTab('table')">جدول المهام (To-Do)</button>
-      <button type="button" class="tab-btn" id="tab-calendar" onclick="switchTab('calendar')">تقويم الجدولة والتسليمات</button>
-      <button type="button" class="tab-btn" id="tab-notes" onclick="switchTab('notes')">ملاحظات وأفكار <span class="tab-badge" id="badgeNotes">0</span></button>
-      <button type="button" class="tab-btn" id="tab-team" onclick="switchTab('team')">لوحة الفريق والوحدات</button>
-    </div>
-    <div style="font-size:.775rem;color:var(--on-surface-subtle);padding:0 var(--space-sm)"><span class="shortcut-hint">بحث: /</span> التاريخ: <strong id="currentDateDisplay" style="color:var(--askon-purple)"></strong></div>
-  </div>
+      <div class="filters" id="tasksFilterBar">
+        <select id="filterAssignee" class="input sm" data-change="filters" aria-label="المسؤول"><option value="ALL">كل الأعضاء</option></select>
+        <select id="filterPriority" class="input sm" data-change="filters" aria-label="الأولوية">
+          <option value="ALL">كل الأولويات</option><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium">متوسط</option><option value="low">عادي</option></select>
+        <button class="chip" id="unitChip" data-action="unit" hidden></button>
+        <button class="btn btn-ghost sm" data-action="filterMine"><i data-lucide="user"></i><span>مهامي</span></button>
+        <button class="btn btn-ghost sm" data-action="resetFilters"><i data-lucide="rotate-ccw"></i><span>إعادة تعيين</span></button>
+      </div>
 
-  <section class="filter-bar" id="tasksFilterBar">
-    <div class="search-input-wrap">
-      <i data-lucide="search" class="search-icon" style="width:16px;height:16px"></i>
-      <input type="text" id="taskSearchInput" class="search-input" placeholder="بحث في المهام والمشاريع..." aria-label="بحث" oninput="applyFilters()">
-    </div>
-    <select id="filterBusinessUnit" class="filter-select" aria-label="وحدة العمل" onchange="applyFilters()">
-      <option value="ALL">جميع وحدات العمل (5 وحدات)</option>
-      <option value="strategy">الاستشارات الاستراتيجية</option><option value="creative">الإنتاج الإعلامي والإبداعي</option>
-      <option value="operations">إدارة المشاريع والعمليات</option><option value="events">تنظيم الفعاليات والتجارب</option><option value="language">الخدمات اللغوية والتواصل</option>
-    </select>
-    <select id="filterAssignee" class="filter-select" aria-label="المسؤول" onchange="applyFilters()"><option value="ALL">جميع أعضاء الفريق</option></select>
-    <select id="filterPriority" class="filter-select" aria-label="الأولوية" onchange="applyFilters()">
-      <option value="ALL">جميع الأولويات</option><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium">متوسط</option><option value="low">عادي</option>
-    </select>
-    <button type="button" class="btn btn-outline" onclick="resetFilters()">إعادة تعيين</button>
-  </section>
+      <!-- BOARD -->
+      <section id="view-board" class="view active">
+        <div class="kanban">
+          <div class="kanban-column" data-status="backlog"><div class="col-head"><span class="col-dot d-backlog"></span><strong>جديدة</strong><em id="count-backlog">0</em><button class="col-add" data-action="newTask" data-status="backlog" aria-label="إضافة مهمة"><i data-lucide="plus"></i></button></div><div class="col-list" id="col-backlog"></div></div>
+          <div class="kanban-column" data-status="in_progress"><div class="col-head"><span class="col-dot d-progress"></span><strong>قيد التنفيذ</strong><em id="count-in_progress">0</em><button class="col-add" data-action="newTask" data-status="in_progress" aria-label="إضافة مهمة"><i data-lucide="plus"></i></button></div><div class="col-list" id="col-in_progress"></div></div>
+          <div class="kanban-column" data-status="review"><div class="col-head"><span class="col-dot d-review"></span><strong>مراجعة الجودة</strong><em id="count-review">0</em><button class="col-add" data-action="newTask" data-status="review" aria-label="إضافة مهمة"><i data-lucide="plus"></i></button></div><div class="col-list" id="col-review"></div></div>
+          <div class="kanban-column" data-status="completed"><div class="col-head"><span class="col-dot d-done"></span><strong>مكتملة</strong><em id="count-completed">0</em><button class="col-add" data-action="newTask" data-status="completed" aria-label="إضافة مهمة"><i data-lucide="plus"></i></button></div><div class="col-list" id="col-completed"></div></div>
+        </div>
+      </section>
 
-  <section id="view-kanban" class="view-content active">
-    <div class="kanban-grid">
-      <div class="kanban-column" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'backlog')"><div class="kanban-col-header"><div class="kanban-col-title-wrap"><span class="kanban-col-indicator indicator-backlog"></span><span class="kanban-col-title">جديدة وقيد الاكتشاف</span></div><span class="kanban-col-count" id="count-backlog">0</span></div><div class="kanban-card-list" id="col-backlog"></div></div>
-      <div class="kanban-column" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'in_progress')"><div class="kanban-col-header"><div class="kanban-col-title-wrap"><span class="kanban-col-indicator indicator-progress"></span><span class="kanban-col-title">قيد التنفيذ والتطوير</span></div><span class="kanban-col-count" id="count-in_progress">0</span></div><div class="kanban-card-list" id="col-in_progress"></div></div>
-      <div class="kanban-column" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'review')"><div class="kanban-col-header"><div class="kanban-col-title-wrap"><span class="kanban-col-indicator indicator-review"></span><span class="kanban-col-title">مراجعة الجودة SOP-007</span></div><span class="kanban-col-count" id="count-review">0</span></div><div class="kanban-card-list" id="col-review"></div></div>
-      <div class="kanban-column" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'completed')"><div class="kanban-col-header"><div class="kanban-col-title-wrap"><span class="kanban-col-indicator indicator-completed"></span><span class="kanban-col-title">مكتملة ومنجزة</span></div><span class="kanban-col-count" id="count-completed">0</span></div><div class="kanban-card-list" id="col-completed"></div></div>
-    </div>
-  </section>
+      <!-- TABLE -->
+      <section id="view-table" class="view">
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>المهمة</th><th>الوحدة</th><th>المسؤول</th><th>الأولوية</th><th>التسليم</th><th>الحالة</th></tr></thead>
+          <tbody id="tableBody"></tbody></table></div>
+      </section>
 
-  <section id="view-table" class="view-content">
-    <div class="table-container"><table class="data-table">
-      <thead><tr><th>المهمة والمشروع</th><th>وحدة العمل</th><th>المسؤول</th><th>الأولوية</th><th>التسليم</th><th>الحالة</th><th style="text-align:center">إجراءات</th></tr></thead>
-      <tbody id="tableBody"></tbody>
-    </table></div>
-  </section>
-
-  <section id="view-calendar" class="view-content">
-    <div class="calendar-layout">
-      <div class="calendar-main-card">
-        <div class="calendar-header">
-          <div class="calendar-month-title"><i data-lucide="calendar-days" style="width:20px;height:20px;color:var(--askon-purple)"></i><span id="calendarMonthYear"></span></div>
-          <div class="calendar-nav-buttons">
-            <button type="button" class="icon-btn" onclick="prevCalendarMonth()" aria-label="الشهر السابق"><i data-lucide="chevron-right" style="width:18px;height:18px"></i></button>
-            <button type="button" class="btn btn-outline" onclick="resetCalendarToCurrent()">اليوم</button>
-            <button type="button" class="icon-btn" onclick="nextCalendarMonth()" aria-label="الشهر التالي"><i data-lucide="chevron-left" style="width:18px;height:18px"></i></button>
+      <!-- CALENDAR -->
+      <section id="view-calendar" class="view">
+        <div class="cal-layout">
+          <div class="panel">
+            <div class="cal-head"><h2 id="calTitle"></h2>
+              <div class="cal-nav"><button class="icon-btn" data-action="nextMonth" aria-label="الشهر التالي"><i data-lucide="chevron-right"></i></button>
+              <button class="btn btn-ghost sm" data-action="today">اليوم</button>
+              <button class="icon-btn" data-action="prevMonth" aria-label="الشهر السابق"><i data-lucide="chevron-left"></i></button></div></div>
+            <div class="cal-dow"><span>الأحد</span><span>الاثنين</span><span>الثلاثاء</span><span>الأربعاء</span><span>الخميس</span><span>الجمعة</span><span>السبت</span></div>
+            <div class="cal-grid" id="calGrid"></div>
           </div>
+          <div class="panel"><h3 id="dayTitle" class="panel-title">مهام اليوم</h3><div id="dayList"></div></div>
         </div>
-        <div class="calendar-grid-header"><div>الأحد</div><div>الاثنين</div><div>الثلاثاء</div><div>الأربعاء</div><div>الخميس</div><div>الجمعة</div><div>السبت</div></div>
-        <div class="calendar-days-grid" id="calendarDaysGrid"></div>
-      </div>
-      <div class="calendar-sidebar"><div class="milestone-card">
-        <div style="border-bottom:1px solid var(--outline);padding-bottom:8px"><h3 style="font-size:.95rem;font-weight:700;color:var(--askon-purple)" id="sidebarCalendarTitle">محطات التسليم القادمة</h3></div>
-        <div id="milestonesList" style="display:flex;flex-direction:column"></div>
-      </div></div>
-    </div>
-  </section>
+      </section>
 
-  <section id="view-notes" class="view-content">
-    <div class="notes-toolbar">
-      <div><h2 style="font-size:1.1rem;font-weight:700;color:var(--askon-purple)">الملاحظات السريعة وأفكار الحملات</h2><p style="font-size:.8rem;color:var(--on-surface-variant)">مساحة لتدوين الأفكار وتحويلها إلى مهام بضغطة زر</p></div>
-      <button type="button" class="btn btn-primary" onclick="openNoteModal()"><i data-lucide="plus" style="width:16px;height:16px"></i><span>ملاحظة جديدة</span></button>
-    </div>
-    <div class="notes-grid" id="notesGrid"></div>
-  </section>
+      <!-- NOTES -->
+      <section id="view-notes" class="view">
+        <div class="view-head"><div><h2>الملاحظات وأفكار الحملات</h2><p class="muted">دوّن الأفكار بتنسيق غني وحوّلها إلى مهام بضغطة زر</p></div>
+          <button class="btn btn-primary" data-action="newNote"><i data-lucide="plus"></i><span>ملاحظة جديدة</span></button></div>
+        <div class="notes-grid" id="notesGrid"></div>
+      </section>
 
-  <section id="view-team" class="view-content">
-    <div class="team-panel-grid">
-      <div class="business-units-list">
-        <h2 style="font-size:1.05rem;font-weight:700;color:var(--askon-purple)">وحدات الأعمال المؤسسية (5 وحدات)</h2>
-        <div class="bu-card"><div class="bu-info"><div class="bu-icon-box" style="background:var(--askon-purple-subtle);color:var(--askon-purple)"><i data-lucide="briefcase"></i></div><div class="bu-title">الاستشارات الاستراتيجية</div></div><span class="bu-badge" id="buCount-strategy">0 مهام</span></div>
-        <div class="bu-card"><div class="bu-info"><div class="bu-icon-box" style="background:var(--askon-fuchsia-subtle);color:var(--askon-fuchsia)"><i data-lucide="video"></i></div><div class="bu-title">الإنتاج الإعلامي والإبداعي</div></div><span class="bu-badge" id="buCount-creative">0 مهام</span></div>
-        <div class="bu-card"><div class="bu-info"><div class="bu-icon-box" style="background:#eff6ff;color:#1d4ed8"><i data-lucide="activity"></i></div><div class="bu-title">إدارة المشاريع والعمليات</div></div><span class="bu-badge" id="buCount-operations">0 مهام</span></div>
-        <div class="bu-card"><div class="bu-info"><div class="bu-icon-box" style="background:var(--askon-gold-subtle);color:var(--askon-gold-hover)"><i data-lucide="sparkles"></i></div><div class="bu-title">تنظيم الفعاليات والتجارب</div></div><span class="bu-badge" id="buCount-events">0 مهام</span></div>
-        <div class="bu-card"><div class="bu-info"><div class="bu-icon-box" style="background:#f0fdf4;color:#15803d"><i data-lucide="languages"></i></div><div class="bu-title">الخدمات اللغوية والتواصل</div></div><span class="bu-badge" id="buCount-language">0 مهام</span></div>
-      </div>
-      <div style="background:var(--surface-container-low);padding:var(--space-md);border-radius:var(--rounded-lg);border:var(--hairline)">
-        <div style="margin-bottom:16px"><h3 style="font-size:1.05rem;font-weight:700;color:var(--askon-purple)">أعضاء الفريق والمسؤوليات</h3>
-          <p style="font-size:.75rem;color:var(--on-surface-variant)">أعضاء الفريق يمكنهم إضافة وتعديل المهام والملاحظات. المديرون فقط يديرون الأعضاء ويحذفون البيانات. لإضافة عضو جديد: أضفه من Supabase ← Authentication، وسيظهر هنا تلقائياً.</p></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--space-md)" id="teamMembersGrid"></div>
-      </div>
+      <!-- TEAM -->
+      <section id="view-team" class="view">
+        <div class="team-layout">
+          <div class="panel"><h3 class="panel-title">وحدات الأعمال</h3><div id="unitList"></div></div>
+          <div class="panel"><h3 class="panel-title">أعضاء الفريق</h3>
+            <p class="muted small">لإضافة عضو جديد: أنشئ حسابه من Supabase ← Authentication، وسيظهر هنا عند أول دخول له.</p>
+            <div class="team-grid" id="teamGrid"></div></div>
+        </div>
+      </section>
     </div>
-  </section>
-
-  <footer class="app-footer">
-    <div>نظام التشغيل المؤسسي AskON OS™</div>
-    <div style="display:flex;align-items:center;gap:6px;color:var(--positive)"><span class="pulse-dot"></span><span id="saveStatusText">متصل بالسيرفر</span></div>
-  </footer>
+  </div>
 </div>
 
-<!-- TASK MODAL -->
-<div class="modal-overlay" id="taskModal"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle">
-  <div class="modal-header"><div class="modal-title"><i data-lucide="check-square" style="width:18px;height:18px"></i><span id="taskModalTitle">إضافة مهمة تشغيلية</span></div><button type="button" class="icon-btn" onclick="closeTaskModal()" aria-label="إغلاق"><i data-lucide="x" style="width:18px;height:18px"></i></button></div>
-  <div class="modal-body">
-    <input type="hidden" id="taskFormId" value="">
-    <div class="form-group"><label class="form-label" for="taskTemplateSelect">استخدام قالب جاهز (SOP Templates)</label>
-      <select id="taskTemplateSelect" class="form-control" onchange="applyTaskTemplate()"><option value="">-- اختر قالب مهام (اختياري) --</option><option value="SOP-002">SOP-002: جلسة اكتشاف احتياجات العميل (Discovery)</option><option value="SOP-003">SOP-003: إعداد العرض الفني والمالي (Proposal)</option><option value="MP-005">MP-005: قائمة لقطات إنتاج إعلاني (Shot List)</option></select></div>
-    <div class="form-group"><label class="form-label" for="taskTitleInput">عنوان المهمة *</label><input type="text" id="taskTitleInput" class="form-control"></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label" for="taskProjectInput">المشروع / العميل</label><input type="text" id="taskProjectInput" class="form-control"></div>
-      <div class="form-group"><label class="form-label" for="taskUnitSelect">وحدة العمل *</label><select id="taskUnitSelect" class="form-control"><option value="strategy">الاستشارات الاستراتيجية</option><option value="creative">الإنتاج الإعلامي والإبداعي</option><option value="operations">إدارة المشاريع والعمليات</option><option value="events">تنظيم الفعاليات والتجارب</option><option value="language">الخدمات اللغوية والتواصل</option></select></div>
+<!-- ============ TASK DRAWER ============ -->
+<div class="drawer-scrim" id="drawerScrim" data-action="closeDrawer"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dwCrumb" aria-hidden="true">
+  <header class="dw-head"><span id="dwCrumb" class="crumb">مهمة جديدة</span>
+    <div class="dw-head-actions"><button class="icon-btn admin-only" id="dwDelete" data-action="deleteTask" aria-label="حذف المهمة" title="حذف المهمة" hidden><i data-lucide="trash-2"></i></button>
+    <button class="icon-btn" data-action="closeDrawer" aria-label="إغلاق"><i data-lucide="x"></i></button></div></header>
+  <div class="dw-body">
+    <label class="field" id="dwTemplateWrap"><span>قالب جاهز (اختياري)</span>
+      <select id="dwTemplate" class="input sm" data-change="template"><option value="">— بدون قالب —</option><option value="SOP-002">SOP-002: جلسة اكتشاف احتياجات العميل</option><option value="SOP-003">SOP-003: إعداد العرض الفني والمالي</option><option value="MP-005">MP-005: قائمة لقطات إنتاج إعلاني</option></select></label>
+    <input id="dwTitle" class="dw-title" maxlength="200" placeholder="عنوان المهمة" aria-label="عنوان المهمة">
+    <div class="dw-meta">
+      <label class="field"><span><i data-lucide="circle-dot"></i>الحالة</span><select id="dwStatus" class="input sm"><option value="backlog">جديدة</option><option value="in_progress">قيد التنفيذ</option><option value="review">مراجعة الجودة</option><option value="completed">مكتملة</option></select></label>
+      <label class="field"><span><i data-lucide="flag"></i>الأولوية</span><select id="dwPriority" class="input sm"><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium" selected>متوسط</option><option value="low">عادي</option></select></label>
+      <label class="field"><span><i data-lucide="user"></i>المسؤول</span><select id="dwAssignee" class="input sm"></select></label>
+      <label class="field"><span><i data-lucide="briefcase"></i>الوحدة</span><select id="dwUnit" class="input sm"><option value="strategy">الاستشارات الاستراتيجية</option><option value="creative">الإنتاج الإعلامي والإبداعي</option><option value="operations">إدارة المشاريع والعمليات</option><option value="events">تنظيم الفعاليات والتجارب</option><option value="language">الخدمات اللغوية والتواصل</option></select></label>
+      <label class="field"><span><i data-lucide="calendar"></i>التسليم</span><input type="date" id="dwDue" class="input sm"></label>
+      <label class="field"><span><i data-lucide="folder"></i>المشروع / العميل</span><input type="text" id="dwProject" class="input sm" maxlength="120"></label>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label" for="taskAssigneeSelect">العضو المسؤول *</label><select id="taskAssigneeSelect" class="form-control"></select></div>
-      <div class="form-group"><label class="form-label" for="taskPrioritySelect">الأولوية *</label><select id="taskPrioritySelect" class="form-control"><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium" selected>متوسط</option><option value="low">عادي</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label" for="taskDueDateInput">تاريخ التسليم *</label><input type="date" id="taskDueDateInput" class="form-control"></div>
-      <div class="form-group"><label class="form-label" for="taskStatusSelect">حالة المهمة *</label><select id="taskStatusSelect" class="form-control"><option value="backlog">جديدة وقيد الاكتشاف</option><option value="in_progress" selected>قيد التنفيذ</option><option value="review">مراجعة الجودة (SOP-007)</option><option value="completed">مكتملة ومنجزة</option></select></div>
-    </div>
-    <div class="form-group"><label class="form-label" for="taskDescInput">تفاصيل ومخرجات المهمة</label><textarea id="taskDescInput" class="form-control"></textarea></div>
+    <div class="dw-sec"><h4>الوصف والمخرجات</h4><div id="dwEditor"></div></div>
+    <div class="dw-sec" id="dwSop"></div>
+    <div class="dw-sec" id="dwAtt"></div>
   </div>
-  <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeTaskModal()">إلغاء</button><button type="button" class="btn btn-primary" onclick="saveTaskForm()">حفظ المهمة</button></div>
-</div></div>
+  <footer class="dw-foot"><button class="btn btn-ghost" data-action="closeDrawer">إلغاء</button><button class="btn btn-primary" id="dwSave" data-action="saveTask"><i data-lucide="check"></i><span>حفظ</span></button></footer>
+</aside>
+<input type="file" id="fileInput" data-change="files" multiple hidden accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.mp4,.mov,.mp3,.m4a,.wav">
 
-<!-- NOTE MODAL -->
-<div class="modal-overlay" id="noteModal"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
-  <div class="modal-header"><div class="modal-title" id="noteModalTitle">ملاحظة وفكرة جديدة</div><button type="button" class="icon-btn" onclick="closeNoteModal()" aria-label="إغلاق"><i data-lucide="x"></i></button></div>
+<!-- ============ NOTE MODAL ============ -->
+<div class="modal-overlay" id="noteModal" data-modal><div class="modal-card wide" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+  <div class="modal-head"><h3 id="noteModalTitle">ملاحظة جديدة</h3><button class="icon-btn" data-action="closeNote" aria-label="إغلاق"><i data-lucide="x"></i></button></div>
   <div class="modal-body">
-    <input type="hidden" id="noteFormId" value="">
-    <div class="form-group"><label for="noteTitleInput">عنوان الفكرة *</label><input type="text" id="noteTitleInput" class="form-control"></div>
-    <div class="form-row">
-      <div class="form-group"><label for="noteColorSelect">اللون</label><select id="noteColorSelect" class="form-control"><option value="note-purple">أرجواني</option><option value="note-fuchsia">فوشيا</option><option value="note-gold">ذهبي</option></select></div>
-      <div class="form-group"><label for="noteUnitSelect">الوحدة</label><select id="noteUnitSelect" class="form-control"><option value="strategy">استراتيجية</option><option value="creative">إبداع</option><option value="operations">عمليات</option><option value="events">فعاليات</option><option value="language">لغات</option></select></div>
+    <input type="hidden" id="nId">
+    <label class="field"><span>العنوان *</span><input type="text" id="nTitle" class="input" maxlength="200"></label>
+    <div class="row2">
+      <label class="field"><span>اللون</span><select id="nColor" class="input"><option value="note-purple">أرجواني</option><option value="note-fuchsia">فوشيا</option><option value="note-gold">ذهبي</option></select></label>
+      <label class="field"><span>الوحدة</span><select id="nUnit" class="input"><option value="strategy">استراتيجية</option><option value="creative">إبداع</option><option value="operations">عمليات</option><option value="events">فعاليات</option><option value="language">لغات</option></select></label>
     </div>
-    <div class="form-group"><label for="noteContentInput">المحتوى *</label><textarea id="noteContentInput" class="form-control" rows="5"></textarea></div>
+    <div class="field"><span>المحتوى</span><div id="nEditor"></div></div>
   </div>
-  <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeNoteModal()">إلغاء</button><button type="button" class="btn btn-primary" onclick="saveNoteForm()">حفظ</button></div>
+  <div class="modal-foot"><button class="btn btn-ghost" data-action="closeNote">إلغاء</button><button class="btn btn-primary" data-action="saveNote">حفظ</button></div>
 </div></div>
 
-<!-- MEMBER MODAL (edit only) -->
-<div class="modal-overlay" id="memberModal"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memberModalTitle">
-  <div class="modal-header"><div class="modal-title" id="memberModalTitle">تعديل بيانات العضو</div><button type="button" class="icon-btn" onclick="closeMemberModal()" aria-label="إغلاق"><i data-lucide="x"></i></button></div>
+<!-- ============ MEMBER MODAL ============ -->
+<div class="modal-overlay" id="memberModal" data-modal><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memberModalTitle">
+  <div class="modal-head"><h3 id="memberModalTitle">تعديل بيانات العضو</h3><button class="icon-btn" data-action="closeMember" aria-label="إغلاق"><i data-lucide="x"></i></button></div>
   <div class="modal-body">
-    <input type="hidden" id="memberFormId" value="">
-    <div class="form-group"><label for="memberNameInput">الاسم *</label><input type="text" id="memberNameInput" class="form-control"></div>
-    <div class="form-row">
-      <div class="form-group"><label for="memberRoleInput">المسمى الوظيفي</label><input type="text" id="memberRoleInput" class="form-control"></div>
-      <div class="form-group"><label for="memberUnitSelect">الوحدة</label><select id="memberUnitSelect" class="form-control"><option value="strategy">استراتيجية</option><option value="creative">إبداع</option><option value="operations">عمليات</option><option value="events">فعاليات</option><option value="language">لغات</option></select></div>
+    <input type="hidden" id="mId">
+    <label class="field"><span>الاسم *</span><input type="text" id="mName" class="input" maxlength="80"></label>
+    <div class="row2">
+      <label class="field"><span>المسمى الوظيفي</span><input type="text" id="mRole" class="input" maxlength="80"></label>
+      <label class="field"><span>الوحدة</span><select id="mUnit" class="input"><option value="strategy">استراتيجية</option><option value="creative">إبداع</option><option value="operations">عمليات</option><option value="events">فعاليات</option><option value="language">لغات</option></select></label>
     </div>
-    <div class="form-group"><label class="sop-item" style="font-size:.85rem;font-weight:600;margin-top:8px"><input type="checkbox" id="memberIsAdminInput"> منحه صلاحية "مدير نظام" (حذف المهام والملاحظات وإدارة الأعضاء)</label></div>
+    <label class="check"><input type="checkbox" id="mAdmin"><span>صلاحية «مدير نظام» (حذف المهام والملاحظات وإدارة الأعضاء)</span></label>
   </div>
-  <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeMemberModal()">إلغاء</button><button type="button" class="btn btn-primary" onclick="saveMemberForm()">حفظ</button></div>
+  <div class="modal-foot"><button class="btn btn-ghost" data-action="closeMember">إلغاء</button><button class="btn btn-primary" data-action="saveMember">حفظ</button></div>
 </div></div>
 
-<!-- CONFIRM MODAL -->
-<div class="modal-overlay" id="confirmModal"><div class="modal-card" style="max-width:420px" role="alertdialog" aria-modal="true">
-  <div class="modal-header"><div class="modal-title" style="color:var(--error)"><i data-lucide="alert-triangle"></i><span id="confirmModalTitle">تأكيد</span></div><button type="button" class="icon-btn" onclick="closeConfirmModal()" aria-label="إغلاق"><i data-lucide="x"></i></button></div>
-  <div class="modal-body"><p id="confirmModalMessage" style="font-size:.875rem;color:var(--on-surface-variant)"></p></div>
-  <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeConfirmModal()">إلغاء</button><button type="button" class="btn btn-primary" id="confirmModalActionBtn" style="background:var(--error)">تأكيد</button></div>
+<!-- ============ CONFIRM ============ -->
+<div class="modal-overlay" id="confirmModal" data-modal><div class="modal-card narrow" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle">
+  <div class="modal-head"><h3 id="cfTitle">تأكيد</h3></div>
+  <div class="modal-body"><p id="cfMsg" class="muted"></p></div>
+  <div class="modal-foot"><button class="btn btn-ghost" data-action="cfCancel">إلغاء</button><button class="btn btn-danger" id="cfOk" data-action="cfOk">تأكيد</button></div>
 </div></div>
 
-<div class="toast-container" id="toastContainer"></div>
-
-<script src="config.js"></script>
-<script>
-/* ==========================================================================
-   AskON OS — Supabase edition
-   1) الصق قيمك هنا (Project Settings ← API). مفتاح anon آمن للنشر بالصفحة
-      بشرط تفعيل RLS. لا تضع service_role هنا أبداً.
-   ========================================================================== */
-const SUPABASE_URL = window.ASKON_CONFIG?.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = window.ASKON_CONFIG?.SUPABASE_ANON_KEY || '';
-
-const BUSINESS_UNITS = {
-  strategy:{name:'الاستشارات الاستراتيجية',colorClass:'unit-strategy',chipClass:'chip-purple'},
-  creative:{name:'الإنتاج الإعلامي والإبداعي',colorClass:'unit-creative',chipClass:'chip-fuchsia'},
-  operations:{name:'إدارة المشاريع والعمليات',colorClass:'unit-operations',chipClass:'chip-purple'},
-  events:{name:'تنظيم الفعاليات والتجارب',colorClass:'unit-events',chipClass:'chip-gold'},
-  language:{name:'الخدمات اللغوية والتواصل',colorClass:'unit-language',chipClass:'chip-purple'}
-};
-const PRIORITIES = {urgent:{label:'عاجل جدًا',badgeClass:'priority-urgent'},high:{label:'مرتفع',badgeClass:'priority-high'},medium:{label:'متوسط',badgeClass:'priority-medium'},low:{label:'عادي',badgeClass:'priority-low'}};
-const STATUSES = {backlog:{label:'جديدة'},in_progress:{label:'قيد التنفيذ'},review:{label:'مراجعة الجودة'},completed:{label:'مكتملة'}};
-const NOTE_COLORS = ['note-purple','note-fuchsia','note-gold'];
-const ARABIC_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-
-const pad = n => String(n).padStart(2,'0');
-const toLocalISO = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const NOW = new Date();
-const TODAY_STR = toLocalISO(NOW);
-
-let sb = null;
-let appState = {
-  team:[],tasks:[],notes:[],currentTab:'kanban',currentUserId:null,
-  filters:{search:'',unit:'ALL',assignee:'ALL',priority:'ALL'},
-  calendarDate:new Date(NOW.getFullYear(),NOW.getMonth(),1),
-  selectedCalendarDay:NOW.getDate(),draggedTaskId:null
-};
-let pendingConfirmAction = null, lastFocusedEl = null, reloadTimer = null, realtimeChannel = null;
-
-/* ---------- Helpers ---------- */
-function escapeHtml(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-const safeId = v => String(v ?? '').replace(/[^\w-]/g,'').slice(0,64);
-const isDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v);
-const isAdminUser = () => { const u = appState.team.find(m => m.id === appState.currentUserId); return !!(u && u.isAdmin); };
-const isUrgentOrLate = t => t.status !== 'completed' && (t.priority === 'urgent' || (t.dueDate && t.dueDate <= TODAY_STR));
-function refreshIcons(){ if(window.lucide) window.lucide.createIcons(); }
-function setStatus(msg){ const el = document.getElementById('saveStatusText'); if(el) el.textContent = msg; }
-
-/* DB row → app object (مع تنظيف) */
-const fromProfile = r => ({id:safeId(r.id),name:String(r.name||'بدون اسم').slice(0,80),role:String(r.role||'').slice(0,80),unit:BUSINESS_UNITS[r.unit]?r.unit:'operations',isAdmin:r.is_admin===true});
-const fromTask = r => ({
-  id:safeId(r.id),title:String(r.title||'بدون عنوان').slice(0,200),project:String(r.project||'').slice(0,120),
-  unit:BUSINESS_UNITS[r.unit]?r.unit:'operations',assigneeId:r.assignee_id?safeId(r.assignee_id):'',
-  priority:PRIORITIES[r.priority]?r.priority:'medium',status:STATUSES[r.status]?r.status:'backlog',
-  dueDate:isDate(r.due_date)?String(r.due_date).slice(0,10):'',description:String(r.description||'').slice(0,2000),
-  sopChecklist:Array.isArray(r.sop_checklist)&&r.sop_checklist.length===4?r.sop_checklist.map(Boolean):[false,false,false,false]
-});
-const fromNote = r => ({id:safeId(r.id),title:String(r.title||'بدون عنوان').slice(0,200),content:String(r.content||'').slice(0,4000),color:NOTE_COLORS.includes(r.color)?r.color:'note-purple',unit:BUSINESS_UNITS[r.unit]?r.unit:'strategy'});
-
-/* تنفيذ كتابة على السيرفر مع كشف الرفض بسبب الصلاحيات (RLS) */
-async function mutate(query){
-  try{
-    const {data,error} = await query.select();
-    if(error){ showToast('خطأ: ' + error.message); return false; }
-    if(!data || !data.length){ showToast('العملية غير مسموحة لحسابك أو العنصر غير موجود'); return false; }
-    return true;
-  }catch(e){ showToast('تعذّر الاتصال بالسيرفر'); return false; }
-}
-
-/* ---------- Auth ---------- */
-function showLogin(msg){
-  document.body.classList.add('auth-pending');
-  document.getElementById('loginOverlay').classList.add('show');
-  document.getElementById('loginError').textContent = msg || '';
-  document.getElementById('loginBtn').disabled = false;
-}
-function hideLogin(){ document.body.classList.remove('auth-pending'); document.getElementById('loginOverlay').classList.remove('show'); }
-
-async function doLogin(e){
-  e.preventDefault();
-  const btn = document.getElementById('loginBtn'); btn.disabled = true;
-  document.getElementById('loginError').textContent = '';
-  const {data,error} = await sb.auth.signInWithPassword({
-    email:document.getElementById('loginEmail').value.trim(),
-    password:document.getElementById('loginPassword').value
-  });
-if(error){ showLogin('خطأ: ' + error.message); return; }  await startSession(data.user);
-}
-async function doLogout(){
-  if(realtimeChannel){ try{ await sb.removeChannel(realtimeChannel); }catch(e){} realtimeChannel = null; }
-  await sb.auth.signOut();
-  appState.team = []; appState.tasks = []; appState.notes = []; appState.currentUserId = null;
-  document.getElementById('loginPassword').value = '';
-  showLogin();
-}
-
-async function startSession(user){
-  try{
-    let {data:prof,error} = await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();
-    if(error) throw error;
-    if(!prof){
-      /* أول دخول: ينشئ ملفاً بصلاحية عضو (المدير الأول يُعيَّن من لوحة Supabase) */
-      const name = (user.email || 'عضو').split('@')[0];
-      const ins = await sb.from('profiles').insert({id:user.id,name,role:'',unit:'operations',is_admin:false}).select().maybeSingle();
-      if(ins.error || !ins.data){ await sb.auth.signOut(); return showLogin('حسابك غير مفعّل بعد. تواصل مع المدير.'); }
-    }
-    appState.currentUserId = user.id;
-    await loadAll();
-    hideLogin();
-    applyRole();
-    populateAssigneeDropdowns();
-    renderAllViews();
-    subscribeRealtime();
-    setStatus('متصل بالسيرفر');
-  }catch(err){
-    await sb.auth.signOut();
-    showLogin('تعذّر تحميل البيانات: ' + (err.message || 'خطأ غير معروف'));
-  }
-}
-function applyRole(){
-  const me = appState.team.find(m => m.id === appState.currentUserId);
-  document.body.classList.toggle('role-member',!(me && me.isAdmin));
-  document.body.classList.toggle('role-admin',!!(me && me.isAdmin));
-  document.getElementById('currentUserLabel').textContent = me ? `${me.name} ${me.isAdmin ? '(مدير)' : '(عضو)'}` : '';
-}
-
-/* ---------- Data loading ---------- */
-async function loadAll(){
-  const [p,t,n] = await Promise.all([
-    sb.from('profiles').select('*').order('name'),
-    sb.from('tasks').select('*').order('created_at',{ascending:false}),
-    sb.from('notes').select('*').order('created_at',{ascending:false})
-  ]);
-  const err = p.error || t.error || n.error;
-  if(err) throw err;
-  appState.team = p.data.map(fromProfile);
-  appState.tasks = t.data.map(fromTask);
-  appState.notes = n.data.map(fromNote);
-}
-async function refresh(){
-  try{ await loadAll(); applyRole(); populateAssigneeDropdowns(); renderAllViews(); setStatus('متصل بالسيرفر • ' + new Date().toLocaleTimeString('ar-EG')); }
-  catch(e){ setStatus('تعذّر المزامنة'); }
-}
-function scheduleRefresh(){ clearTimeout(reloadTimer); reloadTimer = setTimeout(refresh,400); }
-function subscribeRealtime(){
-  if(realtimeChannel) return;
-  try{
-    realtimeChannel = sb.channel('askon-sync').on('postgres_changes',{event:'*',schema:'public'},scheduleRefresh).subscribe();
-  }catch(e){}
-}
-document.addEventListener('visibilitychange',() => { if(!document.hidden && appState.currentUserId) scheduleRefresh(); });
-
-/* ---------- Boot ---------- */
-window.addEventListener('DOMContentLoaded',async () => {
-  document.getElementById('currentDateDisplay').textContent = NOW.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
-  refreshIcons();
-  if(!window.supabase){ return showLogin('تعذّر تحميل مكتبة Supabase. تحقق من الاتصال بالإنترنت.'); }
-  if(!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.startsWith('PASTE') || SUPABASE_ANON_KEY.startsWith('PASTE')){
-    return showLogin('لم يتم إعداد الاتصال: عدّل SUPABASE_URL و SUPABASE_ANON_KEY في أعلى السكربت.');
-  }
-  sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-  try{
-    const {data:{session}} = await sb.auth.getSession();
-    if(session) await startSession(session.user); else showLogin();
-  }catch(e){ showLogin('تعذّر الاتصال بالسيرفر'); }
-});
-
-/* ---------- Shortcuts / global ---------- */
-document.addEventListener('keydown',e => {
-  if(e.key === 'Escape'){ closeAllModals(); document.getElementById('notifDropdown').classList.remove('show'); return; }
-  const tag = e.target.tagName;
-  if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  if(!appState.currentUserId || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('.modal-overlay.open')) return;
-  if(e.key === 'n' || e.key === 'N' || e.key === 'ن'){ e.preventDefault(); openTaskModal(); }
-  else if(e.key === '/'){ e.preventDefault(); switchTab('kanban'); document.getElementById('taskSearchInput').focus(); }
-});
-document.addEventListener('click',e => { const w = document.getElementById('notifWrap'); if(w && !w.contains(e.target)) document.getElementById('notifDropdown').classList.remove('show'); });
-document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('mousedown',e => { if(e.target === o) closeAllModals(); }));
-
-function openModal(id,focusId){
-  lastFocusedEl = document.activeElement;
-  document.getElementById(id).classList.add('open'); refreshIcons();
-  if(focusId) setTimeout(() => { const el = document.getElementById(focusId); if(el) el.focus(); },50);
-}
-function closeModal(id){
-  document.getElementById(id).classList.remove('open');
-  if(lastFocusedEl && typeof lastFocusedEl.focus === 'function'){ try{ lastFocusedEl.focus(); }catch(e){} }
-}
-function closeAllModals(){ document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); pendingConfirmAction = null; }
-
-function switchTab(tabId){
-  appState.currentTab = tabId;
-  ['kanban','table','calendar','notes','team'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('active',t === tabId);
-    document.getElementById('view-'+t).classList.toggle('active',t === tabId);
-  });
-  document.getElementById('tasksFilterBar').style.display = (tabId === 'kanban' || tabId === 'table') ? 'flex' : 'none';
-  if(tabId === 'calendar') renderCalendar(); else if(tabId === 'team') renderTeamPanel();
-  refreshIcons();
-}
-function renderAllViews(){ updateKPICounters(); updateNotifications(); renderKanban(); renderTable(); renderCalendar(); renderNotes(); renderTeamPanel(); refreshIcons(); }
-function updateKPICounters(){
-  const set = (id,v) => document.getElementById(id).textContent = v;
-  set('kpiTotalTasks',appState.tasks.length);
-  set('kpiInProgressTasks',appState.tasks.filter(t => t.status === 'in_progress').length);
-  set('kpiReviewTasks',appState.tasks.filter(t => t.status === 'review').length);
-  set('kpiUrgentTasks',appState.tasks.filter(isUrgentOrLate).length);
-  set('kpiTeamCount',appState.team.length);
-  set('badgeKanban',appState.tasks.length); set('badgeNotes',appState.notes.length);
-}
-function updateNotifications(){
-  const list = appState.tasks.filter(isUrgentOrLate);
-  document.getElementById('notifBadge').textContent = list.length;
-  const c = document.getElementById('notifItemsContainer');
-  if(!list.length){ c.innerHTML = `<div style="padding:12px;text-align:center;color:var(--on-surface-subtle);font-size:.8rem">لا توجد مهام عاجلة.</div>`; return; }
-  c.innerHTML = list.map(t => {
-    const late = t.dueDate && t.dueDate < TODAY_STR;
-    return `<div style="padding:8px;border-bottom:1px solid var(--outline-variant);font-size:.8rem"><strong style="color:${late ? 'var(--error)' : 'var(--warning)'}">${late ? 'متأخرة: ' : 'عاجلة: '}</strong>${escapeHtml(t.title)}</div>`;
-  }).join('');
-}
-function toggleNotificationsDropdown(){ document.getElementById('notifDropdown').classList.toggle('show'); }
-function filterMyTasks(){ document.getElementById('filterAssignee').value = appState.currentUserId; applyFilters(); showToast('تم تصفية المهام لعرض مهامك فقط'); }
-function populateAssigneeDropdowns(){
-  const f = document.getElementById('filterAssignee'), t = document.getElementById('taskAssigneeSelect');
-  const opts = appState.team.map(m => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.name)}</option>`).join('');
-  const cur = f.value, curT = t.value;
-  f.innerHTML = `<option value="ALL">جميع أعضاء الفريق</option>` + opts;
-  f.value = appState.team.some(m => m.id === cur) ? cur : 'ALL';
-  t.innerHTML = `<option value="">غير محدد</option>` + opts;
-  t.value = appState.team.some(m => m.id === curT) ? curT : '';
-}
-function applyFilters(){
-  appState.filters = {search:document.getElementById('taskSearchInput').value.toLowerCase(),unit:document.getElementById('filterBusinessUnit').value,assignee:document.getElementById('filterAssignee').value,priority:document.getElementById('filterPriority').value};
-  renderKanban(); renderTable(); refreshIcons();
-}
-function resetFilters(){
-  document.getElementById('taskSearchInput').value = '';
-  ['filterBusinessUnit','filterAssignee','filterPriority'].forEach(id => document.getElementById(id).value = 'ALL');
-  applyFilters();
-}
-function getFilteredTasks(){
-  const f = appState.filters;
-  return appState.tasks.filter(t => {
-    if(f.search && !((t.title||'').toLowerCase().includes(f.search) || (t.description||'').toLowerCase().includes(f.search) || (t.project||'').toLowerCase().includes(f.search))) return false;
-    if(f.unit !== 'ALL' && t.unit !== f.unit) return false;
-    if(f.assignee !== 'ALL' && t.assigneeId !== f.assignee) return false;
-    if(f.priority !== 'ALL' && t.priority !== f.priority) return false;
-    return true;
-  });
-}
-
-/* ---------- Kanban ---------- */
-function renderKanban(){
-  const filtered = getFilteredTasks();
-  ['backlog','in_progress','review','completed'].forEach(status => {
-    const tasks = filtered.filter(t => t.status === status);
-    document.getElementById('count-'+status).textContent = tasks.length;
-    document.getElementById('col-'+status).innerHTML = tasks.length ? tasks.map(renderTaskCardHtml).join('') : `<div style="text-align:center;color:var(--on-surface-subtle);font-size:.775rem;padding:20px 0">فارغ</div>`;
-  });
-}
-function renderTaskCardHtml(task){
-  const bu = BUSINESS_UNITS[task.unit], pr = PRIORITIES[task.priority];
-  const assignee = appState.team.find(m => m.id === task.assigneeId), id = escapeHtml(task.id);
-  let sopHtml = '';
-  if(task.status === 'review'){
-    const s = task.sopChecklist, admin = isAdminUser();
-    const item = (i,label,adminOnly) => { const locked = adminOnly && !admin; return `<label class="sop-item ${locked ? 'locked' : ''}" ${locked ? 'title="للمدير فقط"' : ''}><input type="checkbox" onchange="toggleSop('${id}',${i})" ${s[i] ? 'checked' : ''} ${locked ? 'disabled' : ''}> ${label}</label>`; };
-    sopHtml = `<div class="sop-checklist">${item(0,'مراجعة ذاتية (المنفذ)')}${item(1,'مراجعة فنية (نظير)')}${item(2,'مراجعة نهائية (مدير)',true)}${item(3,'جاهز للاعتماد',true)}</div>`;
-  }
-  const urgentDate = task.dueDate && task.dueDate <= TODAY_STR && task.status !== 'completed';
-  return `<div class="task-card" draggable="true" ondragstart="handleDragStart(event,'${id}')" ondragend="handleDragEnd(event)">
-    <div class="task-card-header"><span class="task-unit-tag ${bu.colorClass}">${escapeHtml(bu.name)}</span><span class="priority-badge ${pr.badgeClass}">${pr.label}</span></div>
-    <div class="task-title">${escapeHtml(task.title)}</div>
-    ${task.project ? `<div class="task-project-label"><i data-lucide="folder" style="width:12px;height:12px"></i>${escapeHtml(task.project)}</div>` : ''}
-    ${task.description ? `<div class="task-desc-preview">${escapeHtml(task.description)}</div>` : ''}
-    ${sopHtml}
-    <div class="task-meta-row">
-      <div class="task-assignee"><span class="assignee-avatar-sm">${assignee ? escapeHtml(assignee.name.charAt(0)) : '?'}</span><span>${assignee ? escapeHtml(assignee.name) : 'غير محدد'}</span></div>
-      <div class="task-due-date ${urgentDate ? 'is-urgent' : ''}"><span>${escapeHtml(task.dueDate || '-')}</span></div>
-    </div>
-    <div class="task-actions-row">
-      <button type="button" class="task-action-btn" onclick="openTaskModal('${id}')" aria-label="تعديل المهمة"><i data-lucide="edit-2" style="width:12px;height:12px"></i></button>
-      <button type="button" class="task-action-btn admin-only" style="color:var(--error)" onclick="confirmDeleteTask('${id}')" aria-label="حذف المهمة"><i data-lucide="trash-2" style="width:12px;height:12px"></i></button>
-    </div></div>`;
-}
-async function toggleSop(taskId,index){
-  const task = appState.tasks.find(t => t.id === taskId); if(!task) return;
-  if((index === 2 || index === 3) && !isAdminUser()){ showToast('هذه الخطوة للمدير فقط'); renderKanban(); refreshIcons(); return; }
-  const list = [...task.sopChecklist]; list[index] = !list[index];
-  const upd = {sop_checklist:list};
-  if(list.every(Boolean)){ upd.status = 'completed'; showToast('اكتملت المراجعة! تم نقل المهمة إلى "مكتملة"'); }
-  await mutate(sb.from('tasks').update(upd).eq('id',taskId));
-  await refresh();
-}
-function handleDragStart(e,id){ appState.draggedTaskId = id; e.dataTransfer.setData('text/plain',id); e.dataTransfer.effectAllowed = 'move'; e.target.classList.add('dragging'); }
-function handleDragEnd(e){ e.target.classList.remove('dragging'); appState.draggedTaskId = null; document.querySelectorAll('.kanban-column.drag-over').forEach(c => c.classList.remove('drag-over')); }
-function handleDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
-function handleDragLeave(e){ if(!e.currentTarget.contains(e.relatedTarget)) e.currentTarget.classList.remove('drag-over'); }
-function handleDrop(e,status){
-  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
-  const id = appState.draggedTaskId || e.dataTransfer.getData('text/plain');
-  if(id) moveTaskStatus(id,status);
-}
-async function moveTaskStatus(id,newStatus){
-  const task = appState.tasks.find(t => t.id === id);
-  if(!task || !STATUSES[newStatus] || task.status === newStatus){ renderTable(); return; }
-  const ok = await mutate(sb.from('tasks').update({status:newStatus}).eq('id',id));
-  if(ok) showToast('تم النقل بنجاح إلى: ' + STATUSES[newStatus].label);
-  await refresh();
-}
-
-/* ---------- Table ---------- */
-function renderTable(){
-  const tbody = document.getElementById('tableBody'), list = getFilteredTasks();
-  if(!list.length){ tbody.innerHTML = `<tr><td colspan="7" style="text-align:center">لا توجد مهام</td></tr>`; return; }
-  tbody.innerHTML = list.map(t => {
-    const bu = BUSINESS_UNITS[t.unit], a = appState.team.find(m => m.id === t.assigneeId), id = escapeHtml(t.id);
-    const opt = (v,l) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`;
-    return `<tr>
-      <td><strong>${escapeHtml(t.title)}</strong>${t.project ? `<div style="font-size:.75rem;color:var(--on-surface-variant)">${escapeHtml(t.project)}</div>` : ''}</td>
-      <td><span class="task-unit-tag ${bu.colorClass}">${escapeHtml(bu.name)}</span></td>
-      <td>${a ? escapeHtml(a.name) : 'غير محدد'}</td><td>${PRIORITIES[t.priority].label}</td><td>${escapeHtml(t.dueDate || '-')}</td>
-      <td><select aria-label="الحالة" onchange="moveTaskStatus('${id}',this.value)" style="padding:2px;font-size:.8rem">${opt('backlog','جديدة')}${opt('in_progress','قيد التنفيذ')}${opt('review','مراجعة')}${opt('completed','مكتملة')}</select></td>
-      <td><div style="display:flex;justify-content:center;gap:4px"><button type="button" class="task-action-btn" onclick="openTaskModal('${id}')">تعديل</button><button type="button" class="task-action-btn admin-only" style="color:var(--error)" onclick="confirmDeleteTask('${id}')">حذف</button></div></td></tr>`;
-  }).join('');
-}
-
-/* ---------- Calendar ---------- */
-function renderCalendar(){
-  const year = appState.calendarDate.getFullYear(), month = appState.calendarDate.getMonth();
-  const daysInMonth = new Date(year,month+1,0).getDate();
-  if(appState.selectedCalendarDay > daysInMonth) appState.selectedCalendarDay = daysInMonth;
-  document.getElementById('calendarMonthYear').textContent = `${ARABIC_MONTHS[month]} ${year}`;
-  let html = '';
-  for(let i = 0; i < new Date(year,month,1).getDay(); i++) html += `<div class="calendar-day-cell other-month"></div>`;
-  for(let day = 1; day <= daysInMonth; day++){
-    const dateStr = `${year}-${pad(month+1)}-${pad(day)}`;
-    const tasks = appState.tasks.filter(t => t.dueDate === dateStr);
-    let chips = tasks.slice(0,2).map(t => `<span class="event-chip ${BUSINESS_UNITS[t.unit].chipClass}">${escapeHtml(t.title)}</span>`).join('');
-    if(tasks.length > 2) chips += `<span style="font-size:.6rem;font-weight:bold">+${tasks.length-2}</span>`;
-    html += `<div class="calendar-day-cell ${dateStr === TODAY_STR ? 'today' : ''} ${day === appState.selectedCalendarDay ? 'selected' : ''}" onclick="selectCalendarDay(${day})"><span class="day-number">${day}</span><div class="day-events-dots">${chips}</div></div>`;
-  }
-  document.getElementById('calendarDaysGrid').innerHTML = html;
-  renderDayTasksInSidebar();
-}
-function selectCalendarDay(day){ appState.selectedCalendarDay = day; renderCalendar(); }
-function renderDayTasksInSidebar(){
-  const year = appState.calendarDate.getFullYear(), month = appState.calendarDate.getMonth();
-  const dateStr = `${year}-${pad(month+1)}-${pad(appState.selectedCalendarDay)}`;
-  document.getElementById('sidebarCalendarTitle').textContent = `مهام يوم ${appState.selectedCalendarDay} ${ARABIC_MONTHS[month]}`;
-  const list = appState.tasks.filter(t => t.dueDate === dateStr);
-  document.getElementById('milestonesList').innerHTML = list.length
-    ? list.map(t => `<div class="milestone-item"><div style="flex:1"><div style="font-size:.825rem;font-weight:600">${escapeHtml(t.title)}</div><div style="font-size:.725rem;color:var(--on-surface-variant)">حالة: ${STATUSES[t.status].label}${t.project ? ' • ' + escapeHtml(t.project) : ''}</div></div></div>`).join('')
-    : `<div style="padding:16px;text-align:center;color:var(--on-surface-subtle);font-size:.8rem">لا توجد مهام تسليم في هذا اليوم.</div>`;
-}
-function prevCalendarMonth(){ appState.calendarDate = new Date(appState.calendarDate.getFullYear(),appState.calendarDate.getMonth()-1,1); renderCalendar(); }
-function nextCalendarMonth(){ appState.calendarDate = new Date(appState.calendarDate.getFullYear(),appState.calendarDate.getMonth()+1,1); renderCalendar(); }
-function resetCalendarToCurrent(){ appState.calendarDate = new Date(NOW.getFullYear(),NOW.getMonth(),1); appState.selectedCalendarDay = NOW.getDate(); renderCalendar(); }
-
-/* ---------- Notes ---------- */
-function renderNotes(){
-  document.getElementById('notesGrid').innerHTML = appState.notes.map(n => {
-    const id = escapeHtml(n.id);
-    return `<div class="note-card ${escapeHtml(n.color)}"><div class="note-header"><span class="note-title">${escapeHtml(n.title)}</span>
-      <div style="display:flex;gap:4px">
-        <button type="button" class="task-action-btn" title="تحويل لمهمة" aria-label="تحويل لمهمة" onclick="convertNoteToTask('${id}')"><i data-lucide="arrow-up-right" style="width:12px"></i></button>
-        <button type="button" class="task-action-btn" title="تعديل" aria-label="تعديل الملاحظة" onclick="openNoteModal('${id}')"><i data-lucide="edit-2" style="width:12px"></i></button>
-        <button type="button" class="task-action-btn admin-only" style="color:var(--error)" aria-label="حذف الملاحظة" onclick="confirmDeleteNote('${id}')"><i data-lucide="trash" style="width:12px"></i></button>
-      </div></div><div class="note-body">${escapeHtml(n.content)}</div></div>`;
-  }).join('');
-}
-function convertNoteToTask(noteId){
-  const n = appState.notes.find(x => x.id === noteId); if(!n) return;
-  openTaskModal();
-  document.getElementById('taskTitleInput').value = n.title;
-  document.getElementById('taskDescInput').value = n.content;
-  document.getElementById('taskUnitSelect').value = n.unit || 'strategy';
-  document.getElementById('taskStatusSelect').value = 'backlog';
-  showToast('تم نقل الفكرة إلى نافذة إنشاء المهمة.');
-}
-function openNoteModal(editId){
-  const n = editId ? appState.notes.find(x => x.id === editId) : null;
-  document.getElementById('noteModalTitle').textContent = n ? 'تعديل الملاحظة' : 'ملاحظة وفكرة جديدة';
-  document.getElementById('noteFormId').value = n ? n.id : '';
-  document.getElementById('noteTitleInput').value = n ? n.title : '';
-  document.getElementById('noteContentInput').value = n ? n.content : '';
-  document.getElementById('noteColorSelect').value = n ? n.color : 'note-purple';
-  document.getElementById('noteUnitSelect').value = n ? n.unit : 'strategy';
-  openModal('noteModal','noteTitleInput');
-}
-function closeNoteModal(){ closeModal('noteModal'); }
-async function saveNoteForm(){
-  const title = document.getElementById('noteTitleInput').value.trim();
-  if(!title) return showToast('الرجاء إدخال عنوان الفكرة');
-  const row = {title,content:document.getElementById('noteContentInput').value,color:document.getElementById('noteColorSelect').value,unit:document.getElementById('noteUnitSelect').value};
-  const id = document.getElementById('noteFormId').value;
-  const ok = await mutate(id ? sb.from('notes').update(row).eq('id',id) : sb.from('notes').insert(row));
-  if(ok){ closeNoteModal(); await refresh(); }
-}
-function confirmDeleteNote(id){
-  showConfirmDialog('حذف','تأكيد الحذف؟',async () => { if(await mutate(sb.from('notes').delete().eq('id',id))) showToast('تم الحذف'); await refresh(); });
-}
-
-/* ---------- Team ---------- */
-function renderTeamPanel(){
-  Object.keys(BUSINESS_UNITS).forEach(u => { document.getElementById('buCount-'+u).textContent = appState.tasks.filter(t => t.unit === u).length + ' مهام'; });
-  document.getElementById('teamMembersGrid').innerHTML = appState.team.map(m => {
-    const active = appState.tasks.filter(t => t.assigneeId === m.id && t.status !== 'completed').length;
-    const pct = Math.min(Math.round(active/10*100),100);
-    const color = pct > 85 ? 'var(--error)' : pct > 60 ? 'var(--warning)' : 'var(--positive)';
-    const id = escapeHtml(m.id);
-    return `<div class="member-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><div style="font-weight:600;display:flex;gap:4px;align-items:center">${escapeHtml(m.name)} ${m.isAdmin ? '<span style="font-size:.65rem;background:var(--askon-gold-subtle);color:var(--askon-gold-hover);padding:2px 4px;border-radius:4px">مدير</span>' : ''}</div>
-        <div style="font-size:.75rem;color:var(--on-surface-variant)">${escapeHtml(m.role)}</div></div>
-        <div class="admin-only" style="display:flex;gap:2px">
-          <button type="button" class="task-action-btn" aria-label="تعديل العضو" onclick="openMemberModal('${id}')"><i data-lucide="edit-3" style="width:14px"></i></button>
-          <button type="button" class="task-action-btn" style="color:var(--error)" aria-label="حذف العضو" onclick="confirmDeleteMember('${id}')"><i data-lucide="trash" style="width:14px"></i></button>
-        </div>
-      </div>
-      <div style="font-size:.75rem;margin-top:8px"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span>ضغط العمل (${active} مهام)</span><span>${pct}%</span></div>
-      <div class="workload-bar-container"><div class="workload-progress" style="width:${pct}%;background:${color}"></div></div></div></div>`;
-  }).join('');
-}
-function openMemberModal(editId){
-  const m = appState.team.find(x => x.id === editId); if(!m) return;
-  document.getElementById('memberFormId').value = m.id;
-  document.getElementById('memberNameInput').value = m.name;
-  document.getElementById('memberRoleInput').value = m.role;
-  document.getElementById('memberUnitSelect').value = m.unit;
-  document.getElementById('memberIsAdminInput').checked = m.isAdmin;
-  openModal('memberModal','memberNameInput');
-}
-function closeMemberModal(){ closeModal('memberModal'); }
-async function saveMemberForm(){
-  const name = document.getElementById('memberNameInput').value.trim();
-  if(!name) return showToast('الرجاء إدخال الاسم');
-  const id = document.getElementById('memberFormId').value;
-  const m = appState.team.find(x => x.id === id); if(!m) return;
-  const isAdmin = document.getElementById('memberIsAdminInput').checked;
-  if(m.isAdmin && !isAdmin && appState.team.filter(x => x.isAdmin).length === 1) return showToast('لا يمكن إزالة صلاحية آخر مدير في النظام');
-  const ok = await mutate(sb.from('profiles').update({name,role:document.getElementById('memberRoleInput').value.trim(),unit:document.getElementById('memberUnitSelect').value,is_admin:isAdmin}).eq('id',id));
-  if(ok){ showToast('تم تعديل بيانات العضو'); closeMemberModal(); await refresh(); }
-}
-function confirmDeleteMember(id){
-  const m = appState.team.find(x => x.id === id); if(!m) return;
-  if(id === appState.currentUserId) return showToast('لا يمكنك حذف حسابك أثناء استخدامه!');
-  if(m.isAdmin && appState.team.filter(x => x.isAdmin).length === 1) return showToast('لا يمكن حذف آخر مدير في النظام');
-  showToast('لإزالة عضو بأمان، احذف حسابه من Supabase ← Authentication. ستُحذف بياناته الشخصية تلقائياً.');
-}
-
-/* ---------- Tasks ---------- */
-function applyTaskTemplate(){
-  const v = document.getElementById('taskTemplateSelect').value;
-  const title = document.getElementById('taskTitleInput'), desc = document.getElementById('taskDescInput');
-  if(v === 'SOP-002'){ title.value = 'جلسة اكتشاف احتياجات العميل (Discovery)'; desc.value = '- تحديد المشكلة الجوهرية للعميل\n- تحليل الفئة المستهدفة\n- صياغة المخرجات المتوقعة في وثيقة'; }
-  else if(v === 'SOP-003'){ title.value = 'إعداد العرض الفني والمالي'; desc.value = '- إدراج نطاق العمل\n- التسعير التفصيلي\n- الجدول الزمني\n- مراجعة مدير الحسابات'; }
-  else if(v === 'MP-005'){ title.value = 'تجهيز قائمة اللقطات وأمر العمل'; desc.value = '- اعتماد مواقع التصوير\n- تراخيص الكوادر\n- قائمة المعدات والتجهيزات التقنية'; }
-}
-function openTaskModal(editId){
-  const t = editId ? appState.tasks.find(x => x.id === editId) : null;
-  document.getElementById('taskModalTitle').textContent = t ? 'تعديل المهمة' : 'إضافة مهمة تشغيلية';
-  document.getElementById('taskFormId').value = t ? t.id : '';
-  document.getElementById('taskTitleInput').value = t ? t.title : '';
-  document.getElementById('taskProjectInput').value = t ? t.project : '';
-  document.getElementById('taskUnitSelect').value = t ? t.unit : 'strategy';
-  document.getElementById('taskAssigneeSelect').value = t ? t.assigneeId : (appState.currentUserId || '');
-  document.getElementById('taskPrioritySelect').value = t ? t.priority : 'medium';
-  document.getElementById('taskDueDateInput').value = t ? t.dueDate : TODAY_STR;
-  document.getElementById('taskStatusSelect').value = t ? t.status : 'in_progress';
-  document.getElementById('taskDescInput').value = t ? t.description : '';
-  document.getElementById('taskTemplateSelect').value = '';
-  openModal('taskModal','taskTitleInput');
-}
-function closeTaskModal(){ closeModal('taskModal'); }
-async function saveTaskForm(){
-  const title = document.getElementById('taskTitleInput').value.trim();
-  if(!title) return showToast('الرجاء إدخال عنوان المهمة');
-  const id = document.getElementById('taskFormId').value;
-  const row = {
-    title,project:document.getElementById('taskProjectInput').value.trim(),unit:document.getElementById('taskUnitSelect').value,
-    assignee_id:document.getElementById('taskAssigneeSelect').value || null,priority:document.getElementById('taskPrioritySelect').value,
-    due_date:document.getElementById('taskDueDateInput').value || null,status:document.getElementById('taskStatusSelect').value,
-    description:document.getElementById('taskDescInput').value.trim()
-  };
-  if(!id) row.sop_checklist = [false,false,false,false];
-  const ok = await mutate(id ? sb.from('tasks').update(row).eq('id',id) : sb.from('tasks').insert(row));
-  if(ok){ showToast(id ? 'تم تعديل المهمة' : 'تم إضافة المهمة'); closeTaskModal(); await refresh(); }
-}
-function confirmDeleteTask(id){
-  showConfirmDialog('حذف المهمة','تأكيد حذف المهمة بشكل نهائي؟',async () => { if(await mutate(sb.from('tasks').delete().eq('id',id))) showToast('تم الحذف'); await refresh(); });
-}
-
-/* ---------- Export ---------- */
-function exportDataBackup(){
-  const blob = new Blob([JSON.stringify({team:appState.team,tasks:appState.tasks,notes:appState.notes},null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'askon_backup.json';
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href),1000);
-  showToast('تم التنزيل');
-}
-
-/* ---------- Confirm + toast ---------- */
-function showConfirmDialog(title,msg,onConfirm){
-  document.getElementById('confirmModalTitle').textContent = title;
-  document.getElementById('confirmModalMessage').textContent = msg;
-  pendingConfirmAction = onConfirm; openModal('confirmModal','confirmModalActionBtn');
-}
-function closeConfirmModal(){ closeModal('confirmModal'); pendingConfirmAction = null; }
-document.getElementById('confirmModalActionBtn').onclick = () => { const fn = pendingConfirmAction; closeConfirmModal(); if(fn) fn(); };
-function showToast(msg){
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div'); t.className = 'toast-message'; t.textContent = msg; c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(),300); },3500);
-}
-</script>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 </body>
 </html>
