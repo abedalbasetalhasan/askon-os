@@ -7,6 +7,8 @@
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>AskON OS | نظام إدارة المهام والعمليات</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +24,7 @@
 <!-- ============ LOGIN ============ -->
 <div class="login-overlay show" id="loginOverlay">
   <form class="login-card" id="loginForm" novalidate>
-    <div class="login-brand"><div class="logo-mark">A</div><div><div class="brand-name">AskON OS</div><div class="muted">تسجيل الدخول إلى نظام العمليات</div></div></div>
+    <div class="login-brand"><img src="logo.png" class="logo-img lg-l" alt="AskON"><img src="logo-dark.png" class="logo-img lg-d" alt=""><div><div class="brand-name">AskON OS</div><div class="muted">تسجيل الدخول إلى نظام العمليات</div></div></div>
     <label class="field"><span>البريد الإلكتروني</span><input type="email" id="loginEmail" class="input" autocomplete="username" maxlength="254" dir="ltr" required></label>
     <label class="field"><span>كلمة المرور</span>
       <span class="pw-wrap"><input type="password" id="loginPassword" class="input" autocomplete="current-password" maxlength="128" dir="ltr" required>
@@ -36,7 +38,7 @@
 <!-- ============ APP ============ -->
 <div class="app" id="app">
   <aside class="sidebar" id="sidebar" aria-label="القائمة الرئيسية">
-    <div class="sb-brand"><div class="logo-mark">A</div><div class="sb-brand-text"><strong>AskON OS</strong><span>KEEP ON ASKING</span></div>
+    <div class="sb-brand"><img src="logo.png" class="logo-img lg-l" alt="AskON"><img src="logo-dark.png" class="logo-img lg-d" alt=""><div class="sb-brand-text"><strong>AskON OS</strong><span>KEEP ON ASKING</span></div>
       <button class="icon-btn only-mobile" data-action="closeSidebar" aria-label="إغلاق القائمة"><i data-lucide="x"></i></button></div>
     <nav class="sb-nav" aria-label="العروض">
       <button class="nav-item active" data-action="view" data-view="board"><i data-lucide="layout-dashboard"></i><span>لوحة كانبان</span><em id="badgeKanban">0</em></button>
@@ -145,26 +147,34 @@
 <!-- ============ TASK DRAWER ============ -->
 <div class="drawer-scrim" id="drawerScrim" data-action="closeDrawer"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dwCrumb" aria-hidden="true">
-  <header class="dw-head"><span id="dwCrumb" class="crumb">مهمة جديدة</span>
-    <div class="dw-head-actions"><button class="icon-btn admin-only" id="dwDelete" data-action="deleteTask" aria-label="حذف المهمة" title="حذف المهمة" hidden><i data-lucide="trash-2"></i></button>
-    <button class="icon-btn" data-action="closeDrawer" aria-label="إغلاق"><i data-lucide="x"></i></button></div></header>
+  <header class="dw-head"><span id="dwCrumb" class="crumb">تفاصيل المهمة</span>
+    <div class="dw-head-actions">
+      <button class="icon-btn" id="dwEditTop" data-action="startEdit" aria-label="تعديل المهمة" title="تعديل (E)" hidden><i data-lucide="pencil"></i></button>
+      <button class="icon-btn admin-only" id="dwDelete" data-action="deleteTask" aria-label="حذف المهمة" title="حذف المهمة" hidden><i data-lucide="trash-2"></i></button>
+      <button class="icon-btn" data-action="closeDrawer" aria-label="إغلاق"><i data-lucide="x"></i></button></div></header>
   <div class="dw-body">
-    <label class="field" id="dwTemplateWrap"><span>قالب جاهز (اختياري)</span>
-      <select id="dwTemplate" class="input sm" data-change="template"><option value="">— بدون قالب —</option><option value="SOP-002">SOP-002: جلسة اكتشاف احتياجات العميل</option><option value="SOP-003">SOP-003: إعداد العرض الفني والمالي</option><option value="MP-005">MP-005: قائمة لقطات إنتاج إعلاني</option></select></label>
-    <input id="dwTitle" class="dw-title" maxlength="200" placeholder="عنوان المهمة" aria-label="عنوان المهمة">
-    <div class="dw-meta">
-      <label class="field"><span><i data-lucide="circle-dot"></i>الحالة</span><select id="dwStatus" class="input sm"><option value="backlog">جديدة</option><option value="in_progress">قيد التنفيذ</option><option value="review">مراجعة الجودة</option><option value="completed">مكتملة</option></select></label>
-      <label class="field"><span><i data-lucide="flag"></i>الأولوية</span><select id="dwPriority" class="input sm"><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium" selected>متوسط</option><option value="low">عادي</option></select></label>
-      <label class="field"><span><i data-lucide="user"></i>المسؤول</span><select id="dwAssignee" class="input sm"></select></label>
-      <label class="field"><span><i data-lucide="briefcase"></i>الوحدة</span><select id="dwUnit" class="input sm"><option value="strategy">الاستشارات الاستراتيجية</option><option value="creative">الإنتاج الإعلامي والإبداعي</option><option value="operations">إدارة المشاريع والعمليات</option><option value="events">تنظيم الفعاليات والتجارب</option><option value="language">الخدمات اللغوية والتواصل</option></select></label>
-      <label class="field"><span><i data-lucide="calendar"></i>التسليم</span><input type="date" id="dwDue" class="input sm"></label>
-      <label class="field"><span><i data-lucide="folder"></i>المشروع / العميل</span><input type="text" id="dwProject" class="input sm" maxlength="120"></label>
+    <!-- عرض كامل للقراءة -->
+    <div id="dwViewPane"></div>
+    <!-- وضع التعديل -->
+    <div id="dwEditPane" class="dw-pane" hidden>
+      <label class="field" id="dwTemplateWrap"><span>قالب جاهز (اختياري)</span>
+        <select id="dwTemplate" class="input sm" data-change="template"><option value="">— بدون قالب —</option><option value="SOP-002">SOP-002: جلسة اكتشاف احتياجات العميل</option><option value="SOP-003">SOP-003: إعداد العرض الفني والمالي</option><option value="MP-005">MP-005: قائمة لقطات إنتاج إعلاني</option></select></label>
+      <input id="dwTitle" class="dw-title" maxlength="200" placeholder="عنوان المهمة" aria-label="عنوان المهمة">
+      <div class="dw-meta">
+        <label class="field"><span><i data-lucide="circle-dot"></i>الحالة</span><select id="dwStatus" class="input sm"><option value="backlog">جديدة</option><option value="in_progress">قيد التنفيذ</option><option value="review">مراجعة الجودة</option><option value="completed">مكتملة</option></select></label>
+        <label class="field"><span><i data-lucide="flag"></i>الأولوية</span><select id="dwPriority" class="input sm"><option value="urgent">عاجل جدًا</option><option value="high">مرتفع</option><option value="medium" selected>متوسط</option><option value="low">عادي</option></select></label>
+        <label class="field"><span><i data-lucide="user"></i>المسؤول</span><select id="dwAssignee" class="input sm"></select></label>
+        <label class="field"><span><i data-lucide="briefcase"></i>الوحدة</span><select id="dwUnit" class="input sm"><option value="strategy">الاستشارات الاستراتيجية</option><option value="creative">الإنتاج الإعلامي والإبداعي</option><option value="operations">إدارة المشاريع والعمليات</option><option value="events">تنظيم الفعاليات والتجارب</option><option value="language">الخدمات اللغوية والتواصل</option></select></label>
+        <label class="field"><span><i data-lucide="calendar"></i>التسليم</span><input type="date" id="dwDue" class="input sm"></label>
+        <label class="field"><span><i data-lucide="folder"></i>المشروع / العميل</span><input type="text" id="dwProject" class="input sm" maxlength="120"></label>
+      </div>
+      <div class="dw-sec"><h4>الوصف والمخرجات</h4><div id="dwEditor"></div></div>
     </div>
-    <div class="dw-sec"><h4>الوصف والمخرجات</h4><div id="dwEditor"></div></div>
     <div class="dw-sec" id="dwSop"></div>
     <div class="dw-sec" id="dwAtt"></div>
   </div>
-  <footer class="dw-foot"><button class="btn btn-ghost" data-action="closeDrawer">إلغاء</button><button class="btn btn-primary" id="dwSave" data-action="saveTask"><i data-lucide="check"></i><span>حفظ</span></button></footer>
+  <footer class="dw-foot" id="dwFootView"><button class="btn btn-ghost" data-action="closeDrawer">إغلاق</button><button class="btn btn-primary" data-action="startEdit"><i data-lucide="pencil"></i><span>تعديل المهمة</span></button></footer>
+  <footer class="dw-foot" id="dwFootEdit" hidden><button class="btn btn-ghost" data-action="cancelEdit">إلغاء</button><button class="btn btn-primary" id="dwSave" data-action="saveTask"><i data-lucide="check"></i><span>حفظ</span></button></footer>
 </aside>
 <input type="file" id="fileInput" data-change="files" multiple hidden accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.mp4,.mov,.mp3,.m4a,.wav">
 

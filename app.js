@@ -208,7 +208,7 @@ const S = {
   view:'board', me:null, filters:{search:'',unit:'ALL',assignee:'ALL',priority:'ALL'},
   cal:new Date(new Date().getFullYear(), new Date().getMonth(), 1), calDay:new Date().getDate(), dragId:null
 };
-const D = {id:null, dirty:false, pending:[], editor:null};
+const D = {id:null, dirty:false, pending:[], editor:null, mode:'edit'};
 let NE = null;          // محرر الملاحظات
 let sb = null, realtimeCh = null, reloadT = null, lastActive = Date.now(), failCount = 0, lockUntil = 0, confirmCb = null;
 const urlCache = new Map();
@@ -217,7 +217,7 @@ const fromProfile = r => ({id:safeId(r.id), name:String(r.name||'بدون اسم
 const fromTask = r => {
   const description = String(r.description || '').slice(0, 60000);
   return {
-    id:safeId(r.id), title:String(r.title||'بدون عنوان').slice(0,200), project:String(r.project||'').slice(0,120),
+    id:safeId(r.id), createdAt:String(r.created_at||''), title:String(r.title||'بدون عنوان').slice(0,200), project:String(r.project||'').slice(0,120),
     unit:UNITS[r.unit]?r.unit:'operations', assigneeId:r.assignee_id?safeId(r.assignee_id):'',
     priority:PRI[r.priority]?r.priority:'medium', status:STATUS[r.status]?r.status:'backlog',
     dueDate:isDateStr(r.due_date)?String(r.due_date).slice(0,10):'', description, descText:htmlText(toHtml(description)).slice(0,300),
@@ -478,27 +478,47 @@ function applyFilters() {
    درج المهمة
    ========================================================================== */
 const drawerOpen = () => byId('drawer').classList.contains('open');
+const fullDate = s => s ? new Date(s + 'T00:00:00').toLocaleDateString('ar', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
+function fillEditFields(t) {
+  byId('dwTitle').value = t.title; byId('dwStatus').value = t.status; byId('dwPriority').value = t.priority;
+  byId('dwAssignee').value = t.assigneeId; byId('dwUnit').value = t.unit; byId('dwDue').value = t.dueDate; byId('dwProject').value = t.project;
+  D.editor.setHTML(t.description);
+}
 function openDrawer(id, preset = {}) {
   const t = id ? S.tasks.find(x => x.id === id) : null; if (id && !t) return;
   if (!D.editor) D.editor = buildEditor(byId('dwEditor'), 'اكتب وصف المهمة ومخرجاتها… استخدم الأدوات أعلاه للتنسيق');
-  D.id = t ? t.id : null; D.pending = [];
-  byId('dwCrumb').textContent = t ? 'تعديل المهمة' : 'مهمة جديدة';
-  byId('dwTitle').value = t ? t.title : '';
-  byId('dwStatus').value = t ? t.status : (STATUS[preset.status] ? preset.status : 'in_progress');
-  byId('dwPriority').value = t ? t.priority : 'medium';
-  byId('dwAssignee').value = t ? t.assigneeId : (S.me || '');
-  byId('dwUnit').value = t ? t.unit : (S.filters.unit !== 'ALL' ? S.filters.unit : 'strategy');
-  byId('dwDue').value = t ? t.dueDate : TODAY;
-  byId('dwProject').value = t ? t.project : '';
+  D.id = t ? t.id : null; D.pending = []; D.dirty = false;
+  if (t) fillEditFields(t);
+  else {
+    byId('dwTitle').value = ''; byId('dwStatus').value = STATUS[preset.status] ? preset.status : 'in_progress'; byId('dwPriority').value = 'medium';
+    byId('dwAssignee').value = S.me || ''; byId('dwUnit').value = S.filters.unit !== 'ALL' ? S.filters.unit : 'strategy';
+    byId('dwDue').value = TODAY; byId('dwProject').value = ''; D.editor.setHTML('');
+  }
   byId('dwTemplate').value = ''; byId('dwTemplateWrap').hidden = !!t; byId('dwDelete').hidden = !t;
-  D.editor.setHTML(t ? t.description : '');
-  D.dirty = false; renderDrawerExtras();
-  byId('drawer').classList.add('open'); byId('drawer').setAttribute('aria-hidden', 'false'); byId('drawerScrim').classList.add('show'); syncScroll(); icons();
-  setTimeout(() => byId('dwTitle').focus({preventScroll:true}), 380);
+  byId('drawer').classList.add('open'); byId('drawer').setAttribute('aria-hidden', 'false'); byId('drawerScrim').classList.add('show'); syncScroll();
+  setDrawerMode(t ? 'view' : 'edit');
+}
+function setDrawerMode(m) {
+  D.mode = m; const edit = m === 'edit';
+  byId('dwViewPane').hidden = edit; byId('dwEditPane').hidden = !edit; byId('dwFootView').hidden = edit; byId('dwFootEdit').hidden = !edit;
+  byId('dwEditTop').hidden = edit || !D.id; byId('dwDelete').hidden = !D.id;
+  byId('dwCrumb').textContent = !D.id ? 'مهمة جديدة' : edit ? 'تعديل المهمة' : 'تفاصيل المهمة';
+  renderDrawerExtras();
+  const body = $('.dw-body'); if (body) body.scrollTop = 0;
+  if (edit) setTimeout(() => byId('dwTitle').focus({preventScroll: true}), 200);
+}
+function startEdit() {
+  const t = S.tasks.find(x => x.id === D.id); if (!t) return;
+  fillEditFields(t); D.dirty = false; D.pending = []; setDrawerMode('edit');
+}
+function cancelEdit() {
+  if (!D.id) { closeDrawer(); return; }
+  const back = () => { D.dirty = false; D.pending = []; setDrawerMode('view'); };
+  if (D.dirty || D.pending.length) confirmBox('تجاهل التغييرات؟', 'لديك تغييرات غير محفوظة. هل تريد الرجوع بدون حفظها؟', back, 'تجاهل'); else back();
 }
 function closeDrawer(force) {
   if (!drawerOpen()) return;
-  if (!force && (D.dirty || D.pending.length)) { confirmBox('تجاهل التغييرات؟', 'لديك تغييرات غير محفوظة. هل تريد إغلاق النافذة بدونها؟', () => closeDrawer(true), 'تجاهل'); return; }
+  if (!force && D.mode === 'edit' && (D.dirty || D.pending.length)) { confirmBox('تجاهل التغييرات؟', 'لديك تغييرات غير محفوظة. هل تريد إغلاق النافذة بدونها؟', () => closeDrawer(true), 'تجاهل'); return; }
   byId('drawer').classList.remove('open'); byId('drawer').setAttribute('aria-hidden', 'true'); byId('drawerScrim').classList.remove('show');
   D.id = null; D.pending = []; D.dirty = false; syncScroll();
 }
@@ -510,20 +530,36 @@ function attItem(a) {
     <button class="icon-btn" data-action="downloadAtt" data-id="${esc(a.id)}" aria-label="تنزيل" title="تنزيل"><i data-lucide="download"></i></button>
     ${canDel ? `<button class="icon-btn" data-action="deleteAtt" data-id="${esc(a.id)}" aria-label="حذف الملف" title="حذف"><i data-lucide="trash-2"></i></button>` : ''}</div>`;
 }
+function renderDrawerView(t) {
+  const a = mem(t.assigneeId), bu = UNITS[t.unit], late = isLate(t);
+  const created = t.createdAt ? new Date(t.createdAt).toLocaleDateString('ar', {day:'numeric', month:'long', year:'numeric'}) : '';
+  byId('dwViewPane').innerHTML = `
+    <div class="vw-tags"><span class="st-pill st-${t.status}">${STATUS[t.status]}</span><span class="pbadge pb-${t.priority}">${PRI[t.priority]}</span><span class="pill ${bu.cls}">${esc(bu.name)}</span></div>
+    <h2 class="vw-title">${esc(t.title)}</h2>
+    <div class="vw-meta">
+      <div class="vw-row"><span><i data-lucide="user"></i>المسؤول</span><b>${a ? `<span class="who">${avatar(a.name, a.id)}${esc(a.name)}</span>` : 'غير محدد'}</b></div>
+      <div class="vw-row"><span><i data-lucide="calendar"></i>تاريخ التسليم</span><b class="${late ? 'c-err' : ''}">${t.dueDate ? esc(fullDate(t.dueDate)) + (late ? ' — متأخرة' : '') : '—'}</b></div>
+      <div class="vw-row"><span><i data-lucide="folder"></i>المشروع / العميل</span><b>${t.project ? esc(t.project) : '—'}</b></div>
+      <div class="vw-row"><span><i data-lucide="clock"></i>تاريخ الإنشاء</span><b>${esc(created) || '—'}</b></div>
+    </div>
+    <div class="dw-sec"><h4><i data-lucide="file-text"></i>الوصف والمخرجات</h4>${t.descText ? `<div class="rich vw-desc">${toHtml(t.description)}</div>` : '<div class="vw-empty">لا يوجد وصف لهذه المهمة. اضغط «تعديل المهمة» لإضافته.</div>'}</div>`;
+}
 function renderDrawerExtras() {
   const t = D.id ? S.tasks.find(x => x.id === D.id) : null;
   if (D.id && !t) { toast('تم حذف هذه المهمة من مستخدم آخر'); closeDrawer(true); return; }
-  const admin = isAdmin(), labels = ['مراجعة ذاتية (المنفذ)', 'مراجعة فنية (نظير)', 'مراجعة نهائية (مدير)', 'جاهز للاعتماد'];
+  const edit = D.mode === 'edit', admin = isAdmin(), labels = ['مراجعة ذاتية (المنفذ)', 'مراجعة فنية (نظير)', 'مراجعة نهائية (مدير)', 'جاهز للاعتماد'];
+  if (t && !edit) renderDrawerView(t);
   byId('dwSop').innerHTML = t && t.status === 'review' ? `<h4><i data-lucide="shield"></i>قائمة مراجعة الجودة (SOP-007)</h4><div class="sop-list">${labels.map((l, i) => {
     const locked = i >= 2 && !admin;
     return `<button class="sop-item ${t.sop[i] ? 'on' : ''} ${locked ? 'locked' : ''}" data-action="toggleSop" data-index="${i}" ${locked ? 'disabled title="للمدير فقط"' : ''}><span class="sop-box"><i data-lucide="check"></i></span>${l}</button>`;
   }).join('')}</div>` : '';
   const list = D.id ? S.attachments.filter(a => a.taskId === D.id) : [];
   let h = `<h4><i data-lucide="paperclip"></i>الملفات المرفقة (${list.length + D.pending.length})</h4>`;
-  if (!S.attOn) h += '<div class="notice">ميزة المرفقات غير مفعّلة بعد. شغّل ملف SQL الخاص بها من Supabase ثم حدّث الصفحة.</div>';
+  if (!S.attOn) h += edit ? '<div class="notice">ميزة المرفقات غير مفعّلة بعد. شغّل ملف SQL الخاص بها من Supabase ثم حدّث الصفحة.</div>' : '<div class="vw-empty">لا توجد ملفات مرفقة</div>';
   else {
-    h += '<button type="button" class="drop" data-action="pickFiles"><i data-lucide="upload"></i><b>اسحب الملفات هنا أو اضغط للاختيار</b><span>حتى 10 ميغا لكل ملف • صور، PDF، Office، ZIP، صوت وفيديو</span></button>';
-    h += `<div class="att-list">${list.map(attItem).join('')}${D.pending.map((f, i) => `<div class="att"><div class="att-th"><i data-lucide="file-text"></i></div><div class="att-info"><b>${esc(f.name)}</b><span>${fmtSize(f.size)} • سيُرفع عند الحفظ</span></div><button class="icon-btn" data-action="removePending" data-i="${i}" aria-label="إزالة"><i data-lucide="x"></i></button></div>`).join('')}</div>`;
+    if (edit) h += '<button type="button" class="drop" data-action="pickFiles"><i data-lucide="upload"></i><b>اسحب الملفات هنا أو اضغط للاختيار</b><span>حتى 10 ميغا لكل ملف • صور، PDF، Office، ZIP، صوت وفيديو</span></button>';
+    const items = list.map(attItem).join('') + (edit ? D.pending.map((f, i) => `<div class="att"><div class="att-th"><i data-lucide="file-text"></i></div><div class="att-info"><b>${esc(f.name)}</b><span>${fmtSize(f.size)} • سيُرفع عند الحفظ</span></div><button class="icon-btn" data-action="removePending" data-i="${i}" aria-label="إزالة"><i data-lucide="x"></i></button></div>`).join('') : '');
+    h += items ? `<div class="att-list">${items}</div>` : (edit ? '' : '<div class="vw-empty">لا توجد ملفات مرفقة</div>');
   }
   byId('dwAtt').innerHTML = h; icons(); loadThumbs();
 }
@@ -550,7 +586,12 @@ async function saveTask() {
   else { row.sop_checklist = [false,false,false,false]; const d = await run(sb.from('tasks').insert(row)); ok = !!d; id = d && d[0].id; }
   if (ok && D.pending.length) { await uploadFiles(id, D.pending); D.pending = []; }
   btn.disabled = false;
-  if (ok) { toast(D.id ? 'تم حفظ التعديلات' : 'تمت إضافة المهمة', 'ok'); closeDrawer(true); await refresh(); }
+  if (ok) {
+    const wasEdit = !!D.id, keep = D.id; toast(wasEdit ? 'تم حفظ التعديلات' : 'تمت إضافة المهمة', 'ok'); D.dirty = false;
+    await refresh();
+    const t = keep && S.tasks.find(x => x.id === keep);
+    if (t && drawerOpen()) { fillEditFields(t); setDrawerMode('view'); } else closeDrawer(true);
+  }
 }
 function deleteTask() {
   const id = D.id; if (!id) return;
@@ -709,7 +750,7 @@ const A = {
   unit: el => { S.filters.unit = S.filters.unit === el.dataset.unit ? 'ALL' : el.dataset.unit; if (!['board','table'].includes(S.view)) setView('board'); applyFilters(); },
   newTask: el => openDrawer(null, {status: el.dataset.status}), openTask: el => openDrawer(el.dataset.id),
   goTask: el => { byId('notifWrap').classList.remove('open'); openDrawer(el.dataset.id); },
-  closeDrawer: () => closeDrawer(), saveTask, deleteTask, toggleSop: el => toggleSop(+el.dataset.index),
+  closeDrawer: () => closeDrawer(), startEdit, cancelEdit, saveTask, deleteTask, toggleSop: el => toggleSop(+el.dataset.index),
   pickFiles: () => byId('fileInput').click(), removePending: el => { D.pending.splice(+el.dataset.i, 1); renderDrawerExtras(); },
   downloadAtt: el => downloadAtt(el.dataset.id), deleteAtt: el => deleteAtt(el.dataset.id),
   toggleNotif: () => byId('notifWrap').classList.toggle('open'),
@@ -787,6 +828,7 @@ document.addEventListener('keydown', e => {
   const tag = e.target.tagName, typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.isContentEditable;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k' && S.me) { e.preventDefault(); byId('taskSearchInput').focus(); return; }
   if ((e.key === 'Enter' || e.key === ' ') && !typing && e.target.matches && e.target.matches('.task-card,.note-card,tr[data-action]')) { e.preventDefault(); e.target.click(); return; }
+  if (!typing && !e.ctrlKey && !e.metaKey && !e.altKey && drawerOpen() && D.mode === 'view' && D.id && !$('.modal-overlay.open') && ['e','E','ث'].includes(e.key)) { e.preventDefault(); startEdit(); return; }
   if (typing || !S.me || e.ctrlKey || e.metaKey || e.altKey || $('.modal-overlay.open') || drawerOpen()) return;
   if (e.key === 'n' || e.key === 'N' || e.key === 'ن') { e.preventDefault(); openDrawer(null); }
   else if (e.key === '/') { e.preventDefault(); byId('taskSearchInput').focus(); }
